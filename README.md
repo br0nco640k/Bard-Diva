@@ -1,51 +1,31 @@
-# BardMac-sicPlayer
-Python script that converts .midi files to .scpt files, akin to BardMusicPlayer, but for mac!
+# BardLinux-Player
 
-Refer to the graphic https://bardmusicplayer.com/perf_settings.png for key bindings. 
-
-To run: 
-
-install python3
-
-install python module mido 
-
-install python module pyautogui
-
-install pysimplegui
-
-install python3-tkinter
-
-ensure keybindings are set as per bardmusicplayer settings
-
-to run:
-open up bard perform mode in FFXIV with instrument of choice.
-
-run cmd line:
-  python3 play.py "path/To/MidiFile/song.midi" 
-
-Switch back to FFXIV in performance mode, and rock out
-
-It helps to have the terminal set up in automtor, as it gives you a simple means to stop the song.
-
-Playing will start after a 2 second delay. this can be updated in the play.py, under the sleep(2) function.
+Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux!
 
 
-If you have issues installing python3, reddit user a5920 wrote up a guide that worked for them:
 
-Install python3 for mac Mac by typing python3 in terminal
+#### To install dependencies:
 
-Install command line developer tools from the popup
+| Debian-based distros        | Fedora                        | Arch Linux     | Void Linux                    |
+|:---------------------------:|:-----------------------------:|:--------------:|:-----------------------------:|
+| `apt-get install python-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python-tkinter` |
 
-Download https://bootstrap.pypa.io/get-pip.py, 
+`pip install -r requirements.txt`
 
-Type python3 <drag get-pip.py here> in terminal, 
-  
-Then python3 -m pip install mido 
-  
-And python3 -m pip install pyautogui
-  
-And python3 -m pip install pysimplegui
-  
-And brew install python3-tkinter
-  
-The last line needs homebrew which you can get here : https://brew.sh/
+
+
+#### Before running:
+
+Ensure keybindings are set as per [BardMusicPlayer's settings](https://bardmusicplayer.com/perf_settings.png).
+
+
+
+#### Running:
+
+- Open up Bard Performance Mode in FFXIV with instrument of choice
+
+- Run `python play.py "path/To/MidiFile/song.midi"`
+
+- Switch back to FFXIV in performance mode, and rock out
+
+Playing will start after a 2 second delay. This can be updated in play.py, under the sleep(2) function.
