@@ -8,7 +8,7 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 
 | Debian-based distros        | Fedora                        | Arch Linux     | Void Linux                    |
 |:---------------------------:|:-----------------------------:|:--------------:|:-----------------------------:|
-| `apt-get install python-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python-tkinter` |
+| `apt-get install python-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` |
 
 `pip install -r requirements.txt`
 
