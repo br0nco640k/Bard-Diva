@@ -78,30 +78,32 @@ def read_files(folder):
     return file_names
 
 
-def playMidi(filename):
+def play_midi(filename):
     pyautogui.PAUSE = 0.05
-    # Import the MIDI file...
-    mid = MidiFile(filename)
-    if mid.type == 3:
+
+    # Import the MIDI file
+    midi_file = MidiFile(filename)
+    if midi_file.type == 3:
         print("Unsupported type.")
         exit(3)
 
-    # wait 3 seconds to switch window
+    # Wait 3 seconds to switch window
     sleep(3)
 
-    try:
-        for msg in mid.play():
-            if hasattr(msg, 'velocity'):
-                #print(msg)
-                window.refresh()
-                if int(msg.velocity) > 0:
-                    press(frequency_to_key(note_to_frequency(msg.note)))
-            if stop == True:
-                break
-        window["-STOP-"].update(disabled=True)
-    except KeyboardInterrupt:
-        print('quit')
-        sys.exit()
+    # Play the MIDI file
+    for message in midi_file.play():
+        if hasattr(message, "velocity"):
+            if int(message.velocity) > 0:
+                press(frequency_to_key(note_to_frequency(message.note)))
+        if stop == True:
+            break
+    refresh_window()
+    
+
+def refresh_window():
+    window.refresh()
+    window["-STOP-"].update(disabled=True)
+
 
 ## GUI
 
@@ -109,7 +111,7 @@ def playMidi(filename):
 
 file_list_column = [
     [
-        sg.Text("Choose Songs Folder"),
+        sg.Text("Select the songs directory"),
         sg.In("", size=(25, 1), enable_events=True, key="-FOLDER-"),
         sg.FolderBrowse(),
     ],
@@ -124,7 +126,7 @@ file_list_column = [
 image_viewer_column = [
     [sg.Text("Selected file:")],
     [sg.Text(size=(40, 1), key="-TOUT-")],
-    [sg.Button('Play !', enable_events=True, key="-PLAY-", disabled=True)],
+    [sg.Button('Play', enable_events=True, key="-PLAY-", disabled=True)],
     [sg.Button('Stop', enable_events=True, key="-STOP-", disabled=True)]
 ]
 
@@ -137,7 +139,7 @@ layout = [
     ]
 ]
 
-window = sg.Window("BardMac-sicPlayer", layout)
+window = sg.Window("BardLinux-Player", layout)
 
 # Run the Event Loop
 
@@ -167,7 +169,7 @@ while True:
 
     elif event == "-PLAY-": # Play button pressed
         window["-STOP-"].update(disabled=False)
-        _thread.start_new_thread(playMidi,(filename,))
+        _thread.start_new_thread(play_midi,(filename,))
 
     elif event == "-STOP-":  # Stop button pressed
         stop = True
