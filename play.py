@@ -1,119 +1,74 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
-import _thread
-import ntpath
-import os.path
+from mido import MidiFile, MetaMessage
 import sys
-import pyautogui
-import PySimpleGUI as sg
 from pathlib import Path
 from time import sleep
-from mido import MetaMessage, MidiFile
+import ntpath
+import pyautogui
 from pyautogui import press
+import PySimpleGUI as sg
+import os.path
+import _thread
 
-
-def note2freq(x):
+def note_to_frequency(note):
     """
     Convert a MIDI note into a frequency (given in Hz)
     """
-    return 440 * 2 ** ((x - 69) / 12)
+    return round(440 * 2 ** ((note - 69) / 12))
 
-def freq2note(b):
+def frequency_to_key(frequency):
     """
-    Convert a frequency (given in Hz) into a MIDI note
+    Convert a frequency (given in Hz) into a key press
     """
-    keystroke = '\t\t keystroke "'
-    if b == 1864:
-        return "j"
-    elif b == 1760:
-        return "8"
-    elif b == 1568:
-        return "5"
-    elif b == 1397:
-        return "4"
-    elif b == 1319:
-        return "3"
-    elif b == 1175:
-        return "2"
-    elif b == 1047:
-        return "8"
-    elif b == 988:
-        return "7"
-    elif b == 932:
-        return "j"
-    elif b == 880:
-        return "6"
-    elif b == 831:
-        return "h"
-    elif b == 784:
-        return "5"
-    elif b == 740:
-        return "g"
-    elif b == 698:
-        return "4"
-    elif b == 659:
-        return "3"
-    elif b == 622:
-        return "f"
-    elif b == 587:
-        return "2"
-    elif b == 554:
-        return "d"
-    elif b == 523:
-        return "1"
-    elif b == 494:
-        return "t"
-    elif b == 466:
-        return "c"
-    elif b == 440:
-        return "r"
-    elif b == 415:
-        return "x"
-    elif b == 392:
-        return "e"
-    elif b == 370:
-        return "z"
-    elif b == 349:
-        return "w"
-    elif b == 330:
-        return "q"
-    elif b == 311:
-        return "l"
-    elif b == 294:
-        return "0"
-    elif b == 277:
-        return "k"
-    elif b == 262:
-        return "9"
-    elif b == 247:
-        return "s"
-    elif b == 233:
-        return "."
-    elif b == 220:
-        return "a"
-    elif b == 208:
-        return "m"
-    elif b == 196:
-        return "p"
-    elif b == 185:
-        return "n"
-    elif b == 175:
-        return "o"
-    elif b == 165:
-        return "i"
-    elif b == 156:
-        return "b"
-    elif b == 147:
-        return "u"
-    elif b == 139:
-        return "v"
-    elif b == 131:
-        return "y"
-    else:
-        keystroke += " NOT FOUND"
-    keystroke += ", freq: " + str(b)
-    return keystroke
+    notes = {
+        1864: "j",
+        1760: "8",
+        1568: "5",
+        1397: "4",
+        1319: "3",
+        1175: "2",
+        1047: "8",
+        988:  "7",
+        932:  "j",
+        880:  "6",
+        831:  "h",
+        784:  "5",
+        740:  "g",
+        698:  "4",
+        659:  "3",
+        622:  "f",
+        587:  "2",
+        554:  "d",
+        523:  "1",
+        494:  "t",
+        466:  "c",
+        440:  "r",
+        415:  "x",
+        392:  "e",
+        370:  "z",
+        349:  "w",
+        330:  "q",
+        311:  "l",
+        294:  "0",
+        277:  "k",
+        262:  "9",
+        247:  "s",
+        233:  ".",
+        220:  "a",
+        208:  "m",
+        196:  "p",
+        185:  "n",
+        175:  "o",
+        165:  "i",
+        156:  "b",
+        147:  "u",
+        139:  "v",
+        131:  "y"
+    }
+    
+    return notes.get(frequency,
+    "\t\t keystroke NOT FOUND, frequency: " + str(frequency))
 
 
 def readFiles(f):
@@ -132,7 +87,6 @@ def readFiles(f):
     ]
     return fnames
 
-
 def playMidi(filename):
     pyautogui.PAUSE = 0.05
     # Import the MIDI file...
@@ -146,20 +100,19 @@ def playMidi(filename):
 
     try:
         for msg in mid.play():
-            if hasattr(msg, "velocity"):
-                # print(msg)
+            if hasattr(msg, 'velocity'):
+                #print(msg)
                 window.refresh()
                 if int(msg.velocity) > 0:
-                    press(freq2note(note2freq(msg.note)))
-            if stop is True:
+                    press(frequency_to_key(note_to_frequency(msg.note)))
+            if stop == True:
                 break
         window["-STOP-"].update(disabled=True)
     except KeyboardInterrupt:
-        print("quit")
+        print('quit')
         sys.exit()
 
-
-# GUI
+## GUI
 
 # First the window layout in 2 columns
 
@@ -169,16 +122,19 @@ file_list_column = [
         sg.In("", size=(25, 1), enable_events=True, key="-FOLDER-"),
         sg.FolderBrowse(),
     ],
-    [sg.Listbox(values=[], enable_events=True,
-                size=(40, 20), key="-FILE LIST-")],
+    [
+        sg.Listbox(
+            values=[], enable_events=True, size=(40, 20), key="-FILE LIST-"
+        )
+    ],
 ]
 
 # For now will only show the name of the file that was chosen
 image_viewer_column = [
     [sg.Text("Selected file:")],
     [sg.Text(size=(40, 1), key="-TOUT-")],
-    [sg.Button("Play !", enable_events=True, key="-PLAY-", disabled=True)],
-    [sg.Button("Stop", enable_events=True, key="-STOP-", disabled=True)],
+    [sg.Button('Play !', enable_events=True, key="-PLAY-", disabled=True)],
+    [sg.Button('Stop', enable_events=True, key="-STOP-", disabled=True)]
 ]
 
 # ----- Full layout -----
@@ -205,21 +161,22 @@ while True:
     # Folder name was filled in, make a list of files in the folder
     if event == "-FOLDER-":
         window["-FILE LIST-"].update(readFiles(values["-FOLDER-"]))
-        window["-TOUT-"].update("")
+        window["-TOUT-"].update('')
         window["-PLAY-"].update(disabled=True)
 
     elif event == "-FILE LIST-":  # A file was chosen from the listbox
         try:
             filename = os.path.join(
-                values["-FOLDER-"], values["-FILE LIST-"][0])
+                values["-FOLDER-"], values["-FILE LIST-"][0]
+            )
             window["-TOUT-"].update(values["-FILE LIST-"][0])
             window["-PLAY-"].update(disabled=False)
         except:
             pass
 
-    elif event == "-PLAY-":  # Play button pressed
+    elif event == "-PLAY-": # Play button pressed
         window["-STOP-"].update(disabled=False)
-        _thread.start_new_thread(playMidi, (filename,))
+        _thread.start_new_thread(playMidi,(filename,))
 
     elif event == "-STOP-":  # Stop button pressed
         stop = True
