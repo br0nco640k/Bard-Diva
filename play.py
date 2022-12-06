@@ -10,6 +10,7 @@ from pyautogui import press
 import PySimpleGUI as sg
 import os.path
 import _thread
+import glob
 
 def note_to_frequency(note):
     """
@@ -71,21 +72,11 @@ def frequency_to_key(frequency):
     "\t\t keystroke NOT FOUND, frequency: " + str(frequency))
 
 
-def readFiles(f):
-    folder = f
-    try:
-        # Get list of files in folder
-        file_list = os.listdir(folder)
-    except:
-        file_list = []
+def read_files(folder):
+    files = glob.glob(os.path.join(folder, "*.mid*"))
+    file_names = [os.path.basename(file) for file in files]
+    return file_names
 
-    fnames = [
-        f
-        for f in file_list
-        if os.path.isfile(os.path.join(folder, f))
-        and f.lower().endswith((".mid", ".midi"))
-    ]
-    return fnames
 
 def playMidi(filename):
     pyautogui.PAUSE = 0.05
@@ -160,7 +151,7 @@ while True:
         break
     # Folder name was filled in, make a list of files in the folder
     if event == "-FOLDER-":
-        window["-FILE LIST-"].update(readFiles(values["-FOLDER-"]))
+        window["-FILE LIST-"].update(read_files(values["-FOLDER-"]))
         window["-TOUT-"].update('')
         window["-PLAY-"].update(disabled=True)
 
