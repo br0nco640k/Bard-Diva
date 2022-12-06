@@ -107,8 +107,7 @@ def refresh_window():
 
 ## GUI
 
-# First the window layout in 2 columns
-
+# Left column
 file_list_column = [
     [
         sg.Text("Select the songs directory"),
@@ -122,20 +121,20 @@ file_list_column = [
     ],
 ]
 
-# For now will only show the name of the file that was chosen
-image_viewer_column = [
+# Right column
+button_column = [
     [sg.Text("Selected file:")],
     [sg.Text(size=(40, 1), key="-TOUT-")],
     [sg.Button('Play', enable_events=True, key="-PLAY-", disabled=True)],
     [sg.Button('Stop', enable_events=True, key="-STOP-", disabled=True)]
 ]
 
-# ----- Full layout -----
+# Full layout with
 layout = [
     [
         sg.Column(file_list_column),
         sg.VSeperator(),
-        sg.Column(image_viewer_column),
+        sg.Column(button_column),
     ]
 ]
 
@@ -148,16 +147,20 @@ stop = False
 while True:
     event, values = window.read()
     stop = False
+
+    # Exit the event loop if it meets these conditions
     if event == "Exit" or event == sg.WIN_CLOSED:
         stop = True
         break
-    # Folder name was filled in, make a list of files in the folder
+
+    # List the files in the directory
     if event == "-FOLDER-":
         window["-FILE LIST-"].update(read_files(values["-FOLDER-"]))
         window["-TOUT-"].update('')
         window["-PLAY-"].update(disabled=True)
 
-    elif event == "-FILE LIST-":  # A file was chosen from the listbox
+    # A file was chosen from the list
+    elif event == "-FILE LIST-":
         try:
             filename = os.path.join(
                 values["-FOLDER-"], values["-FILE LIST-"][0]
@@ -167,11 +170,13 @@ while True:
         except:
             pass
 
-    elif event == "-PLAY-": # Play button pressed
+    # Play button pressed
+    elif event == "-PLAY-":
         window["-STOP-"].update(disabled=False)
         _thread.start_new_thread(play_midi,(filename,))
 
-    elif event == "-STOP-":  # Stop button pressed
+    # Stop button pressed
+    elif event == "-STOP-":
         stop = True
         window["-STOP-"].update(disabled=True)
 
