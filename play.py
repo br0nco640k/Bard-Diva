@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 
 import PySimpleGUI as GUI
-import ntpath
 import os.path
-import sys
 from _thread import start_new_thread
 from glob import glob
-from mido import MidiFile, MetaMessage
-from pathlib import Path
-from pyautogui import PAUSE, press
+from mido import MidiFile
+from pyautogui import press
 from time import sleep
 
 
@@ -16,7 +13,7 @@ def note_to_frequency(note):
     """
     Convert a MIDI note into a frequency (given in Hz)
     """
-    return round(440 * 2 ** ((note - 69) / 12))
+    return round(440 * 2**((note - 69) / 12))
 
 
 def frequency_to_key(frequency):
@@ -69,9 +66,8 @@ def frequency_to_key(frequency):
         131: "y",
     }
 
-    return notes.get(
-        frequency, "\t\t keystroke NOT FOUND, frequency: " + str(frequency)
-    )
+    return notes.get(frequency,
+                     f"\t\t keystroke NOT FOUND, frequency: {frequency}")
 
 
 def read_files(folder):
@@ -81,8 +77,6 @@ def read_files(folder):
 
 
 def play_midi(filename):
-    PAUSE = 0.05
-
     # Import the MIDI file
     midi_file = MidiFile(filename)
     if midi_file.type == 3:
@@ -97,7 +91,7 @@ def play_midi(filename):
         if hasattr(message, "velocity"):
             if int(message.velocity) > 0:
                 press(frequency_to_key(note_to_frequency(message.note)))
-        if stop == True:
+        if stop:
             break
     refresh_window()
 
@@ -107,7 +101,7 @@ def refresh_window():
     window["-STOP-"].update(disabled=True)
 
 
-## GUI
+# GUI
 
 # Left column
 file_list_column = [
@@ -116,7 +110,12 @@ file_list_column = [
         GUI.In("", size=(25, 1), enable_events=True, key="-FOLDER-"),
         GUI.FolderBrowse(),
     ],
-    [GUI.Listbox(values=[], enable_events=True, size=(40, 20), key="-FILE LIST-")],
+    [
+        GUI.Listbox(values=[],
+                    enable_events=True,
+                    size=(40, 20),
+                    key="-FILE LIST-")
+    ],
 ]
 
 # Right column
@@ -128,13 +127,11 @@ button_column = [
 ]
 
 # Full layout with
-layout = [
-    [
-        GUI.Column(file_list_column),
-        GUI.VSeperator(),
-        GUI.Column(button_column),
-    ]
-]
+layout = [[
+    GUI.Column(file_list_column),
+    GUI.VSeperator(),
+    GUI.Column(button_column),
+]]
 
 window = GUI.Window("BardLinux-Player", layout)
 
@@ -160,16 +157,17 @@ while True:
     # A file was chosen from the list
     elif event == "-FILE LIST-":
         try:
-            filename = os.path.join(values["-FOLDER-"], values["-FILE LIST-"][0])
+            filename = os.path.join(values["-FOLDER-"],
+                                    values["-FILE LIST-"][0])
             window["-TOUT-"].update(values["-FILE LIST-"][0])
             window["-PLAY-"].update(disabled=False)
-        except:
+        except (FileNotFoundError, IndexError):
             pass
 
     # Play button pressed
     elif event == "-PLAY-":
         window["-STOP-"].update(disabled=False)
-        start_new_thread(play_midi, (filename,))
+        start_new_thread(play_midi, (filename, ))
 
     # Stop button pressed
     elif event == "-STOP-":
