@@ -23,3 +23,5 @@ Ensure keybindings are set as per [BardMusicPlayer's settings](https://bardmusic
 - Switch back to FFXIV, and rock out
 
 Playing will start after a 3 second delay. This can be updated in play.py, under the sleep(3) function.
+
+The intended purpose of this new fork is to port the GUI away from pysimplegui, and to add some additional features.
