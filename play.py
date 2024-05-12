@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# We're planning to move away from PySimpleGUI because of the
+# licensing change (going "pro") to make things easier for the users
+# because users shouldn't have to sign up for a license key or buy it
+# just to play some bard songs:
 import PySimpleGUI as GUI
 import os.path
 from _thread import start_new_thread
