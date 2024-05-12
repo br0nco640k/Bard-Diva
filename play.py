@@ -6,6 +6,9 @@ from _thread import start_new_thread
 from glob import glob
 from mido import MidiFile
 from pyautogui import press
+# For future use, as we're being way too busy with our keypresses atm:
+from pyautogui import keyDown
+from pyautogui import keyUp
 from time import sleep
 
 
