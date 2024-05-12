@@ -158,7 +158,7 @@ layout = [[
     GUI.Column(button_column),
 ]]
 
-window = GUI.Window("BardLinux-Player", layout)
+window = GUI.Window("Bard Diva", layout)
 
 # Run the Event Loop
 
