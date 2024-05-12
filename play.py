@@ -3,7 +3,7 @@
 # We're planning to move away from PySimpleGUI because of the
 # licensing change (going "pro") to make things easier for the users
 # because users shouldn't have to sign up for a license key or buy it
-# just to play some bard songs:
+# just to play some bard songs. Maybe we can do this with straight Tkinter:
 import PySimpleGUI as GUI
 import os.path
 from _thread import start_new_thread
@@ -99,7 +99,16 @@ def play_midi(filename):
     # instead of hard coding it:
     sleep(3)
 
+    # Some additional notes for future functionality:
+    # midi_file.length will return the total playback time in seconds
+    # midi_file.MidiTrack has sub properties that we can use to get track names, etc.
+    # We may switch to reading in all of the messages in the file, and then
+    # parsing through them to gain much more control over playback, instead of
+    # just letting mido play it, perhaps MUCH later on
+
     # Play the MIDI file
+    # Plays all tracks in the midi file, we may add the ability to focus
+    # on a single track later on:
     for message in midi_file.play():
         if hasattr(message, "velocity"):
             if int(message.velocity) > 0:
