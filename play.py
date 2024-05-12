@@ -15,6 +15,8 @@ from time import sleep
 def note_to_frequency(note):
     """
     Convert a MIDI note into a frequency (given in Hz)
+    May need to tweak this to limit ourselves to just
+    three octaves (also might need a way to select octave range desired):
     """
     return round(440 * 2**((note - 69) / 12))
 
