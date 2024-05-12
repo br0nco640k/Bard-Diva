@@ -1,4 +1,4 @@
-# BardLinux-Player
+# Bard-Diva
 
 Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux!
 
