@@ -7,6 +7,8 @@ from glob import glob
 from mido import MidiFile
 from pyautogui import press
 # For future use, as we're being way too busy with our keypresses atm:
+# Will give us the ability to hold notes instead of just repeatedly
+# pressing the note for its duration
 from pyautogui import keyDown
 from pyautogui import keyUp
 from time import sleep
