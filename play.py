@@ -97,6 +97,9 @@ def play_midi(filename):
     for message in midi_file.play():
         if hasattr(message, "velocity"):
             if int(message.velocity) > 0:
+                # Fix me:
+                # We need a way to track the current note
+                # so that we can hold it instead of pulsing it:
                 press(frequency_to_key(note_to_frequency(message.note)))
         if stop:
             break
