@@ -91,6 +91,8 @@ def play_midi(filename):
         exit(3)
 
     # Wait 3 seconds to switch window
+    # In the future we'll make this user selectable at run time
+    # instead of hard coding it:
     sleep(3)
 
     # Play the MIDI file
