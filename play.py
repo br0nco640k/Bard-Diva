@@ -127,6 +127,7 @@ def refresh_window():
 
 
 # GUI
+# All of this will have to change as we port away from PySimpleGUI:
 
 # Left column
 file_list_column = [
