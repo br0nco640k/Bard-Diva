@@ -5,8 +5,8 @@
 # because users shouldn't have to sign up for a license key or buy it
 # just to play some bard songs. Maybe we can do this with straight Tkinter:
 import PySimpleGUI as GUI
-import Tkinter as Tk
 import os.path
+import tkinter as TK
 from _thread import start_new_thread
 from glob import glob
 # We'll evaluate pulling in other mido functions (or all of mido):
