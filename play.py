@@ -11,10 +11,9 @@ from _thread import start_new_thread
 from glob import glob
 # We'll evaluate pulling in other mido functions (or all of mido):
 from mido import MidiFile
+# We're phasing out press():
 from pyautogui import press
-# For future use, as we're being way too busy with our keypresses atm:
-# Will give us the ability to hold notes instead of just repeatedly
-# pressing the note for its duration
+# Lets us hold notes by doing keyDown and keyUp:
 from pyautogui import keyDown
 from pyautogui import keyUp
 from time import sleep
