@@ -5,9 +5,11 @@
 # because users shouldn't have to sign up for a license key or buy it
 # just to play some bard songs. Maybe we can do this with straight Tkinter:
 import PySimpleGUI as GUI
+import Tkinter as Tk
 import os.path
 from _thread import start_new_thread
 from glob import glob
+# We'll evaluate pulling in other mido functions (or all of mido):
 from mido import MidiFile
 from pyautogui import press
 # For future use, as we're being way too busy with our keypresses atm:
@@ -88,6 +90,7 @@ def read_files(folder):
 
 
 def play_midi(filename):
+    current_note = "000"
     # Import the MIDI file
     midi_file = MidiFile(filename)
     if midi_file.type == 3:
@@ -115,7 +118,14 @@ def play_midi(filename):
                 # Fix me:
                 # We need a way to track the current note
                 # so that we can hold it instead of pulsing it:
-                press(frequency_to_key(note_to_frequency(message.note)))
+                key_to_play = frequency_to_key(note_to_frequency(message.note))
+                if current_note != key_to_play:
+                    keyDown(key_to_play)
+                    current_note = key_to_play
+            else:
+                # Release the key when we no longer have "velocity":
+                if current_note != "000": # 000 is unused above, means we haven't picked a note yet
+                    keyUp(current_note)
         if stop:
             break
     refresh_window()
