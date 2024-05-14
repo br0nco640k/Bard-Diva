@@ -10,7 +10,8 @@ import tkinter as TK
 from _thread import start_new_thread
 from glob import glob
 # We'll evaluate pulling in other mido functions (or all of mido):
-from mido import MidiFile
+#from mido import MidiFile
+import mido 
 # We're phasing out press():
 from pyautogui import press
 # Lets us hold notes by doing keyDown and keyUp:
@@ -89,17 +90,17 @@ def read_files(folder):
 
 
 def play_midi(filename):
-    current_note = "000"
+    delay_time = 5
     # Import the MIDI file
-    midi_file = MidiFile(filename)
+    midi_file = mido.MidiFile(filename, clip=True)
     if midi_file.type == 3:
         print("Unsupported type.")
         exit(3)
 
-    # Wait 3 seconds to switch window
-    # In the future we'll make this user selectable at run time
-    # instead of hard coding it:
-    sleep(3)
+    # Wait time to switch window:
+    for x in range(delay_time):
+        print("playing in ", delay_time - x)
+        sleep(1)
 
     # Some additional notes for future functionality:
     # midi_file.length will return the total playback time in seconds
@@ -111,22 +112,16 @@ def play_midi(filename):
     # Play the MIDI file
     # Plays all tracks in the midi file, we may add the ability to focus
     # on a single track later on:
-    for message in midi_file.play():
+    for message in midi_file.play():               
         if hasattr(message, "velocity"):
             if int(message.velocity) > 0:
-                # Fix me:
-                # We need a way to track the current note
-                # so that we can hold it instead of pulsing it:
                 key_to_play = frequency_to_key(note_to_frequency(message.note))
-                if current_note != key_to_play:
-                    keyDown(key_to_play)
-                    current_note = key_to_play
-            else:
-                # Release the key when we no longer have "velocity":
-                if current_note != "000": # 000 is unused above, means we haven't picked a note yet
-                    keyUp(current_note)
+                press(key_to_play)
+                print("Playing: " + key_to_play)
         if stop:
+            print("Ending song.")
             break
+    print("Ending song.")
     refresh_window()
 
 
