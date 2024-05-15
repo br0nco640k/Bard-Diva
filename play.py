@@ -19,7 +19,7 @@ from pyautogui import keyUp
 from time import sleep
 
 # Some globals for adding a looping option to the GUI later on:
-LoopSong = True
+LoopSong = False # Set to True for song looping, will add a GUI option later
 SinglePlay = False
 
 delay_time = 5
