@@ -6,18 +6,25 @@
 # just to play some bard songs. Maybe we can do this with straight Tkinter:
 import PySimpleGUI as GUI
 import os.path
+# tkinter will be used for our GUI as we phase out PySimpleGUI:
 import tkinter as TK
 from _thread import start_new_thread
 from glob import glob
-# We'll evaluate pulling in other mido functions (or all of mido):
-#from mido import MidiFile
+# We're now just grabbing all of mido:
 import mido 
-# We're phasing out press():
 from pyautogui import press
 # Lets us hold notes by doing keyDown and keyUp:
 from pyautogui import keyDown
 from pyautogui import keyUp
 from time import sleep
+
+# Some globals for adding a looping option to the GUI later on:
+LoopSong = True
+SinglePlay = False
+
+delay_time = 5
+# For future use:
+AllTracks = False
 
 
 def note_to_frequency(note):
@@ -90,13 +97,15 @@ def read_files(folder):
 
 
 def play_midi(filename):
-    delay_time = 5
+    global LoopSong
+    global SinglePlay
     # Import the MIDI file
     midi_file = mido.MidiFile(filename, clip=True)
     if midi_file.type == 3:
         print("Unsupported type.")
         exit(3)
 
+    print(filename)
     # Wait time to switch window:
     for x in range(delay_time):
         print("playing in ", delay_time - x)
@@ -105,23 +114,29 @@ def play_midi(filename):
     # Some additional notes for future functionality:
     # midi_file.length will return the total playback time in seconds
     # midi_file.MidiTrack has sub properties that we can use to get track names, etc.
-    # We may switch to reading in all of the messages in the file, and then
-    # parsing through them to gain much more control over playback, instead of
-    # just letting mido play it, perhaps MUCH later on
 
     # Play the MIDI file
     # Plays all tracks in the midi file, we may add the ability to focus
     # on a single track later on:
-    for message in midi_file.play():               
-        if hasattr(message, "velocity"):
-            if int(message.velocity) > 0:
-                key_to_play = frequency_to_key(note_to_frequency(message.note))
-                press(key_to_play)
-                print("Playing: " + key_to_play)
-        if stop:
-            print("Ending song.")
+    while (LoopSong) or (SinglePlay):
+        for message in midi_file.play():               
+            if hasattr(message, "velocity"):
+                if int(message.velocity) > 0:
+                    key_to_play = frequency_to_key(note_to_frequency(message.note))
+                    press(key_to_play)
+                    print("Playing: " + key_to_play)
+            if stop:
+                print("Ending song.")
+                SinglePlay = False
+                #break
+                return None
+        if (stop):
             break
+        if (SinglePlay):
+            SinglePlay = False
+        print("Looping song: ", filename)
     print("Ending song.")
+    
     refresh_window()
 
 
@@ -197,11 +212,18 @@ while True:
     # Play button pressed
     elif event == "-PLAY-":
         window["-STOP-"].update(disabled=False)
+        if (not LoopSong):
+            SinglePlay = True
         start_new_thread(play_midi, (filename, ))
 
     # Stop button pressed
     elif event == "-STOP-":
         stop = True
+        SinglePlay = False
         window["-STOP-"].update(disabled=True)
+
+    # We're going to loop the song:
+    elif (SongEnd) and (PlayingNow) and (LoopSong):
+        start_new_thread(play_midi, (filename, ))
 
 window.close()
