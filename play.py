@@ -223,7 +223,7 @@ while True:
         window["-STOP-"].update(disabled=True)
 
     # We're going to loop the song:
-    elif (SongEnd) and (PlayingNow) and (LoopSong):
-        start_new_thread(play_midi, (filename, ))
+    #elif (SongEnd) and (PlayingNow) and (LoopSong):
+    #    start_new_thread(play_midi, (filename, ))
 
 window.close()
