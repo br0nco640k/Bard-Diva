@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-# We're planning to move away from PySimpleGUI because of the
-# licensing change (going "pro") to make things easier for the users
-# because users shouldn't have to sign up for a license key or buy it
-# just to play some bard songs. Maybe we can do this with straight Tkinter:
-import PySimpleGUI as GUI
 import os.path
 # tkinter will be used for our GUI as we phase out PySimpleGUI:
 import tkinter as TK
@@ -22,23 +17,20 @@ from time import sleep
 LoopSong = False # Set to True for song looping, will add a GUI option later
 SinglePlay = False
 
+# We'll add gui option to set the delay time for window switching:
 delay_time = 5
 # For future use:
 AllTracks = False
 
-
 def note_to_frequency(note):
     """
-    Convert a MIDI note into a frequency (given in Hz)
-    May need to tweak this to limit ourselves to just
-    three octaves (also might need a way to select octave range desired):
+    Convert a MIDI note into a frequency (given in Hz):
     """
     return round(440 * 2**((note - 69) / 12))
 
-
 def frequency_to_key(frequency):
     """
-    Convert a frequency (given in Hz) into a key press
+    Convert a frequency (given in Hz) into a key press:
     """
     notes = {
         1864: "j",
@@ -89,12 +81,63 @@ def frequency_to_key(frequency):
     return notes.get(frequency,
                      f"\t\t keystroke NOT FOUND, frequency: {frequency}")
 
+def frequency_to_readable_note(frequency):
+    """
+    Convert a frequency (given in Hz) into a readable note:
+    """
+    notes = {
+        1864: "B flat +octave",
+        1760: "C+1",
+        1568: "G +octave",
+        1397: "F +octave",
+        1319: "E +octave",
+        1175: "D +octave",
+        1047: "C+1",
+        988: "B +octave",
+        932: "B flat +octave",
+        880: "A +octave",
+        831: "G# +octave",
+        784: "G +octave",
+        740: "F# +octave",
+        698: "F +octave",
+        659: "E +octave",
+        622: "E flat +octave",
+        587: "D +octave",
+        554: "C# +octave",
+        523: "C +octave",
+        494: "B",
+        466: "B flat",
+        440: "A",
+        415: "G#",
+        392: "G",
+        370: "F#",
+        349: "F",
+        330: "E",
+        311: "E flat",
+        294: "D",
+        277: "C#",
+        262: "C",
+        247: "B -octave",
+        233: "B flat -octave",
+        220: "A -octave",
+        208: "G# -octave",
+        196: "G",
+        185: "F# -octave",
+        175: "F",
+        165: "E",
+        156: "E flat",
+        147: "D",
+        139: "C# -octave",
+        131: "C",
+    }
+
+    return notes.get(frequency,
+                     f"\t\t note NOT FOUND, frequency: {frequency}")
 
 def read_files(folder):
     files = glob(os.path.join(folder, "*.mid*"))
     file_names = [os.path.basename(file) for file in files]
     return file_names
-
 
 def play_midi(filename):
     global LoopSong
@@ -124,12 +167,12 @@ def play_midi(filename):
                 if int(message.velocity) > 0:
                     key_to_play = frequency_to_key(note_to_frequency(message.note))
                     press(key_to_play)
-                    print("Playing: " + key_to_play)
+                    print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
             if stop:
                 print("Ending song.")
                 SinglePlay = False
-                #break
-                return None
+                break
+                #return None
         if (stop):
             break
         if (SinglePlay):
@@ -137,94 +180,5 @@ def play_midi(filename):
         else:
             print("Looping song: ", filename)
     print("Ending song.")
-    
-    refresh_window()
 
-
-def refresh_window():
-    window.refresh()
-    window["-STOP-"].update(disabled=True)
-
-
-# GUI
-# All of this will have to change as we port away from PySimpleGUI:
-
-# Left column
-file_list_column = [
-    [
-        GUI.Text("Select the songs directory"),
-        GUI.In("", size=(25, 1), enable_events=True, key="-FOLDER-"),
-        GUI.FolderBrowse(),
-    ],
-    [
-        GUI.Listbox(values=[],
-                    enable_events=True,
-                    size=(40, 20),
-                    key="-FILE LIST-")
-    ],
-]
-
-# Right column
-button_column = [
-    [GUI.Text("Selected file:")],
-    [GUI.Text(size=(40, 1), key="-TOUT-")],
-    [GUI.Button("Play", enable_events=True, key="-PLAY-", disabled=True)],
-    [GUI.Button("Stop", enable_events=True, key="-STOP-", disabled=True)],
-]
-
-# Full layout with
-layout = [[
-    GUI.Column(file_list_column),
-    GUI.VSeperator(),
-    GUI.Column(button_column),
-]]
-
-window = GUI.Window("Bard Diva", layout)
-
-# Run the Event Loop
-
-stop = False
-
-while True:
-    event, values = window.read()
-    stop = False
-
-    # Exit the event loop if it meets these conditions
-    if event == "Exit" or event == GUI.WIN_CLOSED:
-        stop = True
-        break
-
-    # List the files in the directory
-    if event == "-FOLDER-":
-        window["-FILE LIST-"].update(read_files(values["-FOLDER-"]))
-        window["-TOUT-"].update("")
-        window["-PLAY-"].update(disabled=True)
-
-    # A file was chosen from the list
-    elif event == "-FILE LIST-":
-        try:
-            filename = os.path.join(values["-FOLDER-"],
-                                    values["-FILE LIST-"][0])
-            window["-TOUT-"].update(values["-FILE LIST-"][0])
-            window["-PLAY-"].update(disabled=False)
-        except (FileNotFoundError, IndexError):
-            pass
-
-    # Play button pressed
-    elif event == "-PLAY-":
-        window["-STOP-"].update(disabled=False)
-        if (not LoopSong):
-            SinglePlay = True
-        start_new_thread(play_midi, (filename, ))
-
-    # Stop button pressed
-    elif event == "-STOP-":
-        stop = True
-        SinglePlay = False
-        window["-STOP-"].update(disabled=True)
-
-    # We're going to loop the song:
-    #elif (SongEnd) and (PlayingNow) and (LoopSong):
-    #    start_new_thread(play_midi, (filename, ))
-
-window.close()
+# The NEW GUI stuff begins here:
