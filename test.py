@@ -2,7 +2,8 @@
 
 import os.path
 # tkinter will be used for our GUI as we phase out PySimpleGUI:
-import tkinter as TK
+import tkinter as tk
+from tkinter import ttk
 from _thread import start_new_thread
 from glob import glob
 # We're now just grabbing all of mido:
@@ -11,7 +12,8 @@ from pyautogui import press
 # Lets us hold notes by doing keyDown and keyUp:
 from pyautogui import keyDown
 from pyautogui import keyUp
-from time import sleep
+# we're grabbing all of time now, because we need more of it later on:
+import time as Time
 
 # Some globals for adding a looping option to the GUI later on:
 LoopSong = False # Set to True for song looping, will add a GUI option later
@@ -152,7 +154,7 @@ def play_midi(filename):
     # Wait time to switch window:
     for x in range(delay_time):
         print("playing in ", delay_time - x)
-        sleep(1)
+        Time.sleep(1)
 
     # Some additional notes for future functionality:
     # midi_file.length will return the total playback time in seconds
@@ -182,3 +184,10 @@ def play_midi(filename):
     print("Ending song.")
 
 # The NEW GUI stuff begins here:
+
+# Define the window:
+window = tk.Tk()
+window.title('Bard-Diva')
+window.geometry('500x300')
+window.mainloop()
+
