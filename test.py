@@ -3,6 +3,7 @@
 import os.path
 # tkinter will be used for our GUI as we phase out PySimpleGUI:
 import tkinter as tk
+# Do we actually need this (since we have ALL of tkinter above):
 from tkinter import ttk
 from _thread import start_new_thread
 from glob import glob
@@ -23,6 +24,10 @@ SinglePlay = False
 delay_time = 5
 # For future use:
 AllTracks = False
+# Window geometry:
+width = 800
+height = 500
+
 
 def note_to_frequency(note):
     """
@@ -188,6 +193,7 @@ def play_midi(filename):
 # Define the window:
 window = tk.Tk()
 window.title('Bard-Diva')
-window.geometry('500x300')
+window.geometry(str(width) + 'x' + str(height))
+title_label = ttk.Label(master = window, text = 'Bard Diva: MIDI player for FFXIV bards')
+title_label.pack()
 window.mainloop()
-
