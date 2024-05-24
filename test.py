@@ -2,11 +2,12 @@
 
 import os.path
 # tkinter will be used for our GUI as we phase out PySimpleGUI:
-import tkinter as tk
+from tkinter import *
+from tkinter import filedialog
 # Do we actually need this (since we have ALL of tkinter above):
-from tkinter import ttk
+#from tkinter import ttk
 from _thread import start_new_thread
-from glob import glob
+#from glob import glob
 # We're now just grabbing all of mido:
 import mido 
 from pyautogui import press
@@ -25,8 +26,9 @@ delay_time = 5
 # For future use:
 AllTracks = False
 # Window geometry:
-width = 800
-height = 500
+width = 900
+height = 600
+track_name=""
 
 
 def note_to_frequency(note):
@@ -141,11 +143,6 @@ def frequency_to_readable_note(frequency):
     return notes.get(frequency,
                      f"\t\t note NOT FOUND, frequency: {frequency}")
 
-def read_files(folder):
-    files = glob(os.path.join(folder, "*.mid*"))
-    file_names = [os.path.basename(file) for file in files]
-    return file_names
-
 def play_midi(filename):
     global LoopSong
     global SinglePlay
@@ -191,9 +188,38 @@ def play_midi(filename):
 # The NEW GUI stuff begins here:
 
 # Define the window:
-window = tk.Tk()
-window.title('Bard-Diva')
-window.geometry(str(width) + 'x' + str(height))
-title_label = ttk.Label(master = window, text = 'Bard Diva: MIDI player for FFXIV bards')
-title_label.pack()
-window.mainloop()
+class Main_Window(Tk):
+    # main init:
+    def __init__(self):
+        super().__init__()
+        self.title('Bard-Diva')
+        self.geometry(str(width) + 'x' + str(height))
+        # widgets here:
+        self.label_title = Label(self, text = 'Bard Diva: MIDI player for FFXIV bards')
+        self.label_title.pack()
+        self.filename = Text(self, width=50, height=4)
+        self.filename.pack()
+        self.file_button = Button(self, text="Open File", command=self.file)
+        self.file_button.pack()
+        self.action_label = Label(self, text="")
+        self.action_label.pack()
+        self.play_button = Button(self, text="Play Song", command=self.play_song)
+        self.play_button.pack()
+
+    def file(self):
+        global track_name
+        self.file_to_play = filedialog.askopenfilename(initialdir="",
+                                                       title="Select MIDI file",
+                                                       filetypes=[("MIDI files", "*.mid")])
+        if self.file_to_play:
+            self.filename.delete("1.0", END)
+            self.filename.insert(END, self.file_to_play)
+            track_name=self.file_to_play
+        
+    def play_song(self):
+        self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
+        play_midi(track_name)
+
+# Instantiate window:
+app = Main_Window()
+app.mainloop()
