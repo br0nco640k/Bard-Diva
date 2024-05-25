@@ -19,7 +19,9 @@ import time as Time
 
 # Some globals for adding a looping option to the GUI later on:
 LoopSong = False # Set to True for song looping, will add a GUI option later
+LoopBox = IntVar()
 SinglePlay = False
+QuitPlay = False
 
 # We'll add gui option to set the delay time for window switching:
 delay_time = 5
@@ -146,6 +148,8 @@ def frequency_to_readable_note(frequency):
 def play_midi(filename):
     global LoopSong
     global SinglePlay
+    global QuitPlay
+    QuitPlay = False
     # Import the MIDI file
     midi_file = mido.MidiFile(filename, clip=True)
     if midi_file.type == 3:
@@ -172,12 +176,15 @@ def play_midi(filename):
                     key_to_play = frequency_to_key(note_to_frequency(message.note))
                     press(key_to_play)
                     print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-            if stop:
+            if QuitPlay:
                 print("Ending song.")
                 SinglePlay = False
+                LoopSong = False
                 break
                 #return None
-        if (stop):
+        if (QuitPlay):
+            SinglePlay = False
+            LoopSong = False
             break
         if (SinglePlay):
             SinglePlay = False
@@ -191,6 +198,7 @@ def play_midi(filename):
 class Main_Window(Tk):
     # main init:
     def __init__(self):
+        global LoopBox
         super().__init__()
         self.title('Bard-Diva')
         self.geometry(str(width) + 'x' + str(height))
@@ -203,8 +211,17 @@ class Main_Window(Tk):
         self.file_button.pack()
         self.action_label = Label(self, text="")
         self.action_label.pack()
+        self.loop_song = Checkbutton(self,
+                                     text="Loop Song",
+                                     variable= LoopBox,
+                                     onvalue= 1,
+                                     offvalue= 0,
+                                     height=2,
+                                     width=10)
         self.play_button = Button(self, text="Play Song", command=self.play_song)
         self.play_button.pack()
+        self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing)
+        self.stop_button.pack()
 
     def file(self):
         global track_name
@@ -217,8 +234,21 @@ class Main_Window(Tk):
             track_name=self.file_to_play
         
     def play_song(self):
+        global LoopBox
+        global LoopSong
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
-        play_midi(track_name)
+        start_new_thread(play_midi, (track_name, ))
+        if LoopBox == 1:
+            LoopSong = True
+
+
+        #play_midi(track_name)
+
+    def stop_playing(self):
+        global QuitPlay
+        global SinglePlay
+        SinglePlay = False
+        QuitPlay = True
 
 # Instantiate window:
 app = Main_Window()
