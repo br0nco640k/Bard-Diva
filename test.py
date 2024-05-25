@@ -19,7 +19,7 @@ import time as Time
 
 # Some globals for adding a looping option to the GUI later on:
 LoopSong = False # Set to True for song looping, will add a GUI option later
-LoopBox = IntVar()
+LoopBox = 0
 SinglePlay = False
 QuitPlay = False
 
@@ -218,9 +218,10 @@ class Main_Window(Tk):
                                      offvalue= 0,
                                      height=2,
                                      width=10)
-        self.play_button = Button(self, text="Play Song", command=self.play_song)
+        self.loop_song.pack()
+        self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
         self.play_button.pack()
-        self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing)
+        self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
         self.stop_button.pack()
 
     def file(self):
@@ -232,16 +233,20 @@ class Main_Window(Tk):
             self.filename.delete("1.0", END)
             self.filename.insert(END, self.file_to_play)
             track_name=self.file_to_play
+            self.play_button.config(state="active")
         
     def play_song(self):
         global LoopBox
         global LoopSong
+        global SinglePlay
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
-        start_new_thread(play_midi, (track_name, ))
         if LoopBox == 1:
             LoopSong = True
-
-
+        else:
+            SinglePlay = True
+        start_new_thread(play_midi, (track_name, ))
+        self.stop_button.config(state='active')
+        self.play_button.config(state='disabled')
         #play_midi(track_name)
 
     def stop_playing(self):
@@ -249,6 +254,8 @@ class Main_Window(Tk):
         global SinglePlay
         SinglePlay = False
         QuitPlay = True
+        self.stop_button.config(state='disabled')
+        self.play_button.config(state='active')
 
 # Instantiate window:
 app = Main_Window()
