@@ -14,7 +14,6 @@ import time as Time
 
 # Some globals for adding a looping option to the GUI later on:
 LoopSong = False # Set to True for song looping, will add a GUI option later
-#LoopBox = 0
 SinglePlay = False
 QuitPlay = False
 
@@ -183,6 +182,9 @@ def play_midi(filename):
                     press(key_to_play)
                     print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                else:
+                    print("Waiting for next note")
+                    app.action_label.config(text="Waiting for next note.")
             if QuitPlay:
                 #print("Ending song.")
                 SinglePlay = False
