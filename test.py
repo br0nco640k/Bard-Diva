@@ -3,6 +3,7 @@
 import os.path
 # tkinter will be used for our GUI as we phase out PySimpleGUI:
 from tkinter import *
+from tkinter import IntVar
 from tkinter import filedialog
 # Do we actually need this (since we have ALL of tkinter above):
 #from tkinter import ttk
@@ -19,7 +20,7 @@ import time as Time
 
 # Some globals for adding a looping option to the GUI later on:
 LoopSong = False # Set to True for song looping, will add a GUI option later
-LoopBox = 0
+#LoopBox = 0
 SinglePlay = False
 QuitPlay = False
 
@@ -150,16 +151,21 @@ def play_midi(filename):
     global SinglePlay
     global QuitPlay
     QuitPlay = False
+    print("Looping set to: ", LoopSong)
     # Import the MIDI file
     midi_file = mido.MidiFile(filename, clip=True)
     if midi_file.type == 3:
         print("Unsupported type.")
+        app.action_label.config(text="Unsupported file type")
         exit(3)
+    else:
+        app.action_label.config(text="File loaded.")
 
     print(filename)
     # Wait time to switch window:
     for x in range(delay_time):
         print("playing in ", delay_time - x)
+        app.action_label.config(text="Playing in " + str(delay_time - x))
         Time.sleep(1)
 
     # Some additional notes for future functionality:
@@ -176,8 +182,9 @@ def play_midi(filename):
                     key_to_play = frequency_to_key(note_to_frequency(message.note))
                     press(key_to_play)
                     print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                    app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
             if QuitPlay:
-                print("Ending song.")
+                #print("Ending song.")
                 SinglePlay = False
                 LoopSong = False
                 break
@@ -190,7 +197,11 @@ def play_midi(filename):
             SinglePlay = False
         else:
             print("Looping song: ", filename)
+            app.action_label.config(text="Looping song.")
     print("Ending song.")
+    app.action_label.config(text="Ending song.")
+    app.play_button.config(state='active')
+    app.stop_button.config(state='disabled')
 
 # The NEW GUI stuff begins here:
 
@@ -198,8 +209,9 @@ def play_midi(filename):
 class Main_Window(Tk):
     # main init:
     def __init__(self):
-        global LoopBox
+        #global LoopBox
         super().__init__()
+        self.LoopBox = IntVar()
         self.title('Bard-Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
@@ -211,11 +223,12 @@ class Main_Window(Tk):
         self.file_button.pack()
         self.action_label = Label(self, text="")
         self.action_label.pack()
+        # Debug: this checkbox doesn't set the variable
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
-                                     variable= LoopBox,
-                                     onvalue= 1,
-                                     offvalue= 0,
+                                     variable=self.LoopBox,
+                                     onvalue=1,
+                                     offvalue=0,
                                      height=2,
                                      width=10)
         self.loop_song.pack()
@@ -236,11 +249,11 @@ class Main_Window(Tk):
             self.play_button.config(state="active")
         
     def play_song(self):
-        global LoopBox
         global LoopSong
         global SinglePlay
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
-        if LoopBox == 1:
+        print("Status of LoopBox var: ", self.LoopBox)
+        if self.LoopBox.get() == 1:
             LoopSong = True
         else:
             SinglePlay = True
