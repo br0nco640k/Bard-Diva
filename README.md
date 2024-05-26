@@ -36,3 +36,5 @@ Planned features:
 - Ability to play only a single track, if desired
 
 - Ability to hold long notes
+
+- Guitar "mode" switching (clean, overdriven, etc.)
