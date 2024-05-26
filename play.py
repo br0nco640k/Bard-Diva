@@ -161,6 +161,12 @@ def play_midi(filename):
         app.action_label.config(text="File loaded.")
 
     print(filename)
+    # Here we're testing the ability to read the instrument tracks from the file:
+    for msg in midi_file:
+        if msg.type == 'program_change': # Every program change sets a channel to an instrument type
+            # We can use that channel and program data to determine the type of instrument for that track
+            # and we can populate an options list for them all, by instrument name
+            print(msg)
     # Wait time to switch window:
     for x in range(delay_time):
         print("playing in ", delay_time - x)
@@ -175,7 +181,10 @@ def play_midi(filename):
     # Plays all tracks in the midi file, we may add the ability to focus
     # on a single track later on:
     while (LoopSong) or (SinglePlay):
-        for message in midi_file.play():               
+        for message in midi_file.play():
+            #Another crazy test:
+            if hasattr(message, "channel"): # a channel is an instrument track
+                print(message)               
             if hasattr(message, "velocity"):
                 if int(message.velocity) > 0:
                     key_to_play = frequency_to_key(note_to_frequency(message.note))
