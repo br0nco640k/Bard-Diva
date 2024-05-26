@@ -221,6 +221,7 @@ class Main_Window(Tk):
         self.label_title.pack()
         self.filename = Text(self, width=50, height=4)
         self.filename.pack()
+        self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
         self.file_button.pack()
         self.action_label = Label(self, text="")
@@ -245,10 +246,12 @@ class Main_Window(Tk):
                                                        title="Select MIDI file",
                                                        filetypes=[("MIDI files", "*.mid")])
         if self.file_to_play:
+            self.filename.config(state='normal')
             self.filename.delete("1.0", END)
             self.filename.insert(END, self.file_to_play)
             track_name=self.file_to_play
             self.play_button.config(state="active")
+            self.filename.config(state='disabled')
         
     def play_song(self):
         global LoopSong
