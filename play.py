@@ -89,6 +89,51 @@ def frequency_to_key(frequency):
     return notes.get(frequency,
                      f"\t\t keystroke NOT FOUND, frequency: {frequency}")
 
+def program_to_instrument_name(program):
+
+    programs = {
+        0: "Piano",
+        1: "Piano",
+        2: "Piano",
+        3: "Piano",
+        4: "Piano",
+        5: "Piano",
+        6: "Harpsichord",
+        24: "Accoustic Guitar",
+        25: "Accoustic Guitar",
+        26: "Electric Guitar",
+        27: "Electric Guitar (clean)",
+        28: "Electric Guitar (muted)",
+        29: "Overdriven Guitar",
+        30: "Distortion Guitar",
+        40: "Violin",
+        41: "Viola",
+        42: "Cello",
+        46: "Orchestral Harp",
+        56: "Trumpet",
+        57: "Trombone",
+        58: "Tuba",
+        60: "French Horn",
+        64: "Soprano Sax",
+        65: "Alto Sax",
+        66: "Tenor Sax",
+        67: "Baritone Sax",
+        68: "Oboe",
+        69: "English Horn",
+        70: "Bassoon",
+        71: "Clarinet",
+        72: "Piccolo",
+        73: "Flute",
+        74: "Recorder",
+        75: "Pan Flute",
+        104: "Sitar",
+        105: "Banjo",
+        110: "Fiddle",
+    }
+
+    return programs.get(program,
+                     f"\t\t NOT FOUND: {program}")
+
 def frequency_to_readable_note(frequency):
     """
     Convert a frequency (given in Hz) into a readable note:
@@ -161,12 +206,6 @@ def play_midi(filename):
         app.action_label.config(text="File loaded.")
 
     print(filename)
-    # Here we're testing the ability to read the instrument tracks from the file:
-    for msg in midi_file:
-        if msg.type == 'program_change': # Every program change sets a channel to an instrument type
-            # We can use that channel and program data to determine the type of instrument for that track
-            # and we can populate an options list for them all, by instrument name
-            print(msg) # Let's do something with that data now!
     # Wait time to switch window:
     for x in range(delay_time):
         print("playing in ", delay_time - x)
@@ -268,7 +307,6 @@ class Main_Window(Tk):
                 if msg.type == 'program_change': # Every program change sets a channel to an instrument type
                     # We can use that channel and program data to determine the type of instrument for that track
                     # and we can populate an options list for them all, by instrument name
-                    print(msg) # Let's do something with that data now!
                     self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + str(msg.program) + "\n")
             self.channel_list.config(state='disabled')
         
