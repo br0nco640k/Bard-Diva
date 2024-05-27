@@ -25,16 +25,14 @@ Ensure keybindings are set as per [BardMusicPlayer's settings](https://bardmusic
 
 Playing will start after a 5 second delay. This can be updated in play.py, under the sleep() function.
 
+Now has the ability to list all channels, with assigned instrument. Can select a single channel or play all channels.
+
 Code has been ported from PySimpleGUI to Tkinter. Now includes the ability to loop songs.
 
 Planned features:
 
 - Ability to pause songs
 
-- Ability to list all tracks in a song
-
-- Ability to play only a single track, if desired
-
 - Ability to hold long notes
 
-- Guitar "mode" switching (clean, overdriven, etc.)
+- Ability to select an octave range target

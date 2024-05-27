@@ -21,9 +21,10 @@ QuitPlay = False
 delay_time = 5
 # For future use:
 AllTracks = False
+ChannelToPlay = 0
 # Window geometry:
 width = 900
-height = 600
+height = 1100
 track_name=""
 
 
@@ -89,6 +90,56 @@ def frequency_to_key(frequency):
     return notes.get(frequency,
                      f"\t\t keystroke NOT FOUND, frequency: {frequency}")
 
+def program_to_instrument_name(program):
+
+    programs = {
+        0: "Grand Piano",
+        1: "Bright Piano",
+        2: "Electric Grand Piano",
+        3: "Honky-tonk Piano",
+        4: "Electric Piano 1",
+        5: "Electric Piano 2",
+        6: "Harpsichord",
+        7: "Clavinet",
+        24: "Accoustic Guitar",
+        25: "Accoustic Guitar",
+        26: "Electric Guitar",
+        27: "Electric Guitar (clean)",
+        28: "Electric Guitar (muted)",
+        29: "Overdriven Guitar",
+        30: "Distortion Guitar",
+        35: "Fretless Bass",
+        40: "Violin",
+        41: "Viola",
+        42: "Cello",
+        46: "Orchestral Harp",
+        47: "Timpani",
+        48: "String Ensemble 1",
+        49: "String Ensemble 2",
+        56: "Trumpet",
+        57: "Trombone",
+        58: "Tuba",
+        60: "French Horn",
+        64: "Soprano Sax",
+        65: "Alto Sax",
+        66: "Tenor Sax",
+        67: "Baritone Sax",
+        68: "Oboe",
+        69: "English Horn",
+        70: "Bassoon",
+        71: "Clarinet",
+        72: "Piccolo",
+        73: "Flute",
+        74: "Recorder",
+        75: "Pan Flute",
+        104: "Sitar",
+        105: "Banjo",
+        110: "Fiddle",
+    }
+
+    return programs.get(program,
+                     f"\t\t NOT FOUND: {program}")
+
 def frequency_to_readable_note(frequency):
     """
     Convert a frequency (given in Hz) into a readable note:
@@ -149,8 +200,11 @@ def play_midi(filename):
     global LoopSong
     global SinglePlay
     global QuitPlay
+    global AllTracks
+    global ChannelToPlay
     QuitPlay = False
     print("Looping set to: ", LoopSong)
+    print("Playing channel:", ChannelToPlay)
     # Import the MIDI file
     midi_file = mido.MidiFile(filename, clip=True)
     if midi_file.type == 3:
@@ -175,16 +229,22 @@ def play_midi(filename):
     # Plays all tracks in the midi file, we may add the ability to focus
     # on a single track later on:
     while (LoopSong) or (SinglePlay):
-        for message in midi_file.play():               
+        for message in midi_file.play():             
             if hasattr(message, "velocity"):
                 if int(message.velocity) > 0:
-                    key_to_play = frequency_to_key(note_to_frequency(message.note))
-                    press(key_to_play)
-                    print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                    app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                else:
-                    print("Waiting for next note")
-                    app.action_label.config(text="Waiting for next note.")
+                    if AllTracks == False and int(message.channel) == ChannelToPlay:
+                        key_to_play = frequency_to_key(note_to_frequency(message.note))
+                        press(key_to_play)
+                        #print(message)
+                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                    elif AllTracks == True:
+                        key_to_play = frequency_to_key(note_to_frequency(message.note))
+                        press(key_to_play)
+                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        #print(message)
+                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                    
             if QuitPlay:
                 #print("Ending song.")
                 SinglePlay = False
@@ -214,6 +274,7 @@ class Main_Window(Tk):
         #global LoopBox
         super().__init__()
         self.LoopBox = IntVar()
+        self.AllTracks = IntVar()
         self.title('Bard-Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
@@ -221,11 +282,11 @@ class Main_Window(Tk):
         self.label_title.pack()
         self.filename = Text(self, width=50, height=4)
         self.filename.pack()
+        self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
-        self.file_button.pack()
-        self.action_label = Label(self, text="")
+        self.file_button.pack(pady=10)
+        self.action_label = Label(self, text="Not playing...", height=2)
         self.action_label.pack()
-        # Debug: this checkbox doesn't set the variable
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
                                      variable=self.LoopBox,
@@ -234,10 +295,28 @@ class Main_Window(Tk):
                                      height=2,
                                      width=10)
         self.loop_song.pack()
+        self.play_all = Checkbutton(self,
+                                     text="Play all channels",
+                                     variable=self.AllTracks,
+                                     onvalue=1,
+                                     offvalue=0,
+                                     height=2,
+                                     width=14)
+        self.play_all.pack()
+        self.play_all.select()
+        self.channel_label = Label(self, text = 'Channel to play:')
+        self.channel_label.pack()
+        self.channel_to_play = Spinbox(self, from_=0, to=15)
+        self.channel_to_play.pack(pady=10)
         self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
-        self.play_button.pack()
+        self.play_button.pack(pady=10)
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
         self.stop_button.pack()
+        self.label_channels = Label(self, text = 'Instrument channels in file:')
+        self.label_channels.pack()
+        self.channel_list = Text(self, width=50, height=12)
+        self.channel_list.pack(pady=10)
+        self.channel_list.config(state='disabled')
 
     def file(self):
         global track_name
@@ -245,20 +324,40 @@ class Main_Window(Tk):
                                                        title="Select MIDI file",
                                                        filetypes=[("MIDI files", "*.mid")])
         if self.file_to_play:
+            self.filename.config(state='normal')
             self.filename.delete("1.0", END)
             self.filename.insert(END, self.file_to_play)
             track_name=self.file_to_play
             self.play_button.config(state="active")
+            self.filename.config(state='disabled')
+            ### Things go here:
+            midi_file = mido.MidiFile(track_name, clip=True)
+            self.channel_list.config(state='normal')
+            self.channel_list.delete("1.0", END)
+            for msg in midi_file:
+                if msg.type == 'program_change': # Every program change sets a channel to an instrument type
+                    # We can use that channel and program data to determine the type of instrument for that track
+                    # and we can populate an options list for them all, by instrument name
+                    self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + program_to_instrument_name(msg.program) + "\n")
+            self.channel_list.config(state='disabled')
         
     def play_song(self):
         global LoopSong
         global SinglePlay
+        global AllTracks
+        global ChannelToPlay
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
         print("Status of LoopBox var: ", self.LoopBox)
         if self.LoopBox.get() == 1:
             LoopSong = True
         else:
             SinglePlay = True
+        if self.AllTracks.get() == 1:
+            # More code here to grab that channel desired:
+            AllTracks = True
+        else:
+            ChannelToPlay = int(self.channel_to_play.get())
+            AllTracks = False
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
