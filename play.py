@@ -23,7 +23,7 @@ delay_time = 5
 AllTracks = False
 # Window geometry:
 width = 900
-height = 600
+height = 900
 track_name=""
 
 
@@ -166,7 +166,7 @@ def play_midi(filename):
         if msg.type == 'program_change': # Every program change sets a channel to an instrument type
             # We can use that channel and program data to determine the type of instrument for that track
             # and we can populate an options list for them all, by instrument name
-            print(msg)
+            print(msg) # Let's do something with that data now!
     # Wait time to switch window:
     for x in range(delay_time):
         print("playing in ", delay_time - x)
@@ -181,19 +181,14 @@ def play_midi(filename):
     # Plays all tracks in the midi file, we may add the ability to focus
     # on a single track later on:
     while (LoopSong) or (SinglePlay):
-        for message in midi_file.play():
-            #Another crazy test:
-            if hasattr(message, "channel"): # a channel is an instrument track
-                print(message)               
+        for message in midi_file.play():             
             if hasattr(message, "velocity"):
                 if int(message.velocity) > 0:
                     key_to_play = frequency_to_key(note_to_frequency(message.note))
                     press(key_to_play)
                     print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                else:
-                    print("Waiting for next note")
-                    app.action_label.config(text="Waiting for next note.")
+                
             if QuitPlay:
                 #print("Ending song.")
                 SinglePlay = False
@@ -248,6 +243,11 @@ class Main_Window(Tk):
         self.play_button.pack()
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
         self.stop_button.pack()
+        self.label_channels = Label(self, text = 'Instrument channels in file:')
+        self.label_channels.pack()
+        self.channel_list = Text(self, width=50, height=12)
+        self.channel_list.pack()
+        self.channel_list.config(state='disabled')
 
     def file(self):
         global track_name
@@ -261,6 +261,16 @@ class Main_Window(Tk):
             track_name=self.file_to_play
             self.play_button.config(state="active")
             self.filename.config(state='disabled')
+            ### Things go here:
+            midi_file = mido.MidiFile(track_name, clip=True)
+            self.channel_list.config(state='normal')
+            for msg in midi_file:
+                if msg.type == 'program_change': # Every program change sets a channel to an instrument type
+                    # We can use that channel and program data to determine the type of instrument for that track
+                    # and we can populate an options list for them all, by instrument name
+                    print(msg) # Let's do something with that data now!
+                    self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + str(msg.program) + "\n")
+            self.channel_list.config(state='disabled')
         
     def play_song(self):
         global LoopSong
