@@ -24,7 +24,7 @@ AllTracks = False
 ChannelToPlay = 0
 # Window geometry:
 width = 900
-height = 1000
+height = 1100
 track_name=""
 
 
@@ -200,8 +200,11 @@ def play_midi(filename):
     global LoopSong
     global SinglePlay
     global QuitPlay
+    global AllTracks
+    global ChannelToPlay
     QuitPlay = False
     print("Looping set to: ", LoopSong)
+    print("Playing channel:", ChannelToPlay)
     # Import the MIDI file
     midi_file = mido.MidiFile(filename, clip=True)
     if midi_file.type == 3:
@@ -229,11 +232,19 @@ def play_midi(filename):
         for message in midi_file.play():             
             if hasattr(message, "velocity"):
                 if int(message.velocity) > 0:
-                    key_to_play = frequency_to_key(note_to_frequency(message.note))
-                    press(key_to_play)
-                    print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                    app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                
+                    if AllTracks == False and int(message.channel) == ChannelToPlay:
+                        key_to_play = frequency_to_key(note_to_frequency(message.note))
+                        press(key_to_play)
+                        #print(message)
+                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                    elif AllTracks == True:
+                        key_to_play = frequency_to_key(note_to_frequency(message.note))
+                        press(key_to_play)
+                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        #print(message)
+                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                    
             if QuitPlay:
                 #print("Ending song.")
                 SinglePlay = False
@@ -273,7 +284,7 @@ class Main_Window(Tk):
         self.filename.pack()
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
-        self.file_button.pack()
+        self.file_button.pack(pady=10)
         self.action_label = Label(self, text="Not playing...", height=2)
         self.action_label.pack()
         self.loop_song = Checkbutton(self,
@@ -293,14 +304,18 @@ class Main_Window(Tk):
                                      width=14)
         self.play_all.pack()
         self.play_all.select()
+        self.channel_label = Label(self, text = 'Channel to play:')
+        self.channel_label.pack()
+        self.channel_to_play = Spinbox(self, from_=0, to=15)
+        self.channel_to_play.pack(pady=10)
         self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
-        self.play_button.pack()
+        self.play_button.pack(pady=10)
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
         self.stop_button.pack()
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.pack()
         self.channel_list = Text(self, width=50, height=12)
-        self.channel_list.pack()
+        self.channel_list.pack(pady=10)
         self.channel_list.config(state='disabled')
 
     def file(self):
@@ -340,6 +355,7 @@ class Main_Window(Tk):
             # More code here to grab that channel desired:
             AllTracks = True
         else:
+            ChannelToPlay = int(self.channel_to_play.get())
             AllTracks = False
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
