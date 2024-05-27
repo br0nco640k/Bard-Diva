@@ -333,6 +333,7 @@ class Main_Window(Tk):
             ### Things go here:
             midi_file = mido.MidiFile(track_name, clip=True)
             self.channel_list.config(state='normal')
+            self.channel_list.delete("1.0", END)
             for msg in midi_file:
                 if msg.type == 'program_change': # Every program change sets a channel to an instrument type
                     # We can use that channel and program data to determine the type of instrument for that track
