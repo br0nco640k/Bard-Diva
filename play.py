@@ -21,9 +21,10 @@ QuitPlay = False
 delay_time = 5
 # For future use:
 AllTracks = False
+ChannelToPlay = 0
 # Window geometry:
 width = 900
-height = 900
+height = 1000
 track_name=""
 
 
@@ -92,13 +93,14 @@ def frequency_to_key(frequency):
 def program_to_instrument_name(program):
 
     programs = {
-        0: "Piano",
-        1: "Piano",
-        2: "Piano",
-        3: "Piano",
-        4: "Piano",
-        5: "Piano",
+        0: "Grand Piano",
+        1: "Bright Piano",
+        2: "Electric Grand Piano",
+        3: "Honky-tonk Piano",
+        4: "Electric Piano 1",
+        5: "Electric Piano 2",
         6: "Harpsichord",
+        7: "Clavinet",
         24: "Accoustic Guitar",
         25: "Accoustic Guitar",
         26: "Electric Guitar",
@@ -106,10 +108,14 @@ def program_to_instrument_name(program):
         28: "Electric Guitar (muted)",
         29: "Overdriven Guitar",
         30: "Distortion Guitar",
+        35: "Fretless Bass",
         40: "Violin",
         41: "Viola",
         42: "Cello",
         46: "Orchestral Harp",
+        47: "Timpani",
+        48: "String Ensemble 1",
+        49: "String Ensemble 2",
         56: "Trumpet",
         57: "Trombone",
         58: "Tuba",
@@ -257,6 +263,7 @@ class Main_Window(Tk):
         #global LoopBox
         super().__init__()
         self.LoopBox = IntVar()
+        self.AllTracks = IntVar()
         self.title('Bard-Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
@@ -267,9 +274,8 @@ class Main_Window(Tk):
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
         self.file_button.pack()
-        self.action_label = Label(self, text="")
+        self.action_label = Label(self, text="Not playing...", height=2)
         self.action_label.pack()
-        # Debug: this checkbox doesn't set the variable
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
                                      variable=self.LoopBox,
@@ -278,6 +284,15 @@ class Main_Window(Tk):
                                      height=2,
                                      width=10)
         self.loop_song.pack()
+        self.play_all = Checkbutton(self,
+                                     text="Play all channels",
+                                     variable=self.AllTracks,
+                                     onvalue=1,
+                                     offvalue=0,
+                                     height=2,
+                                     width=14)
+        self.play_all.pack()
+        self.play_all.select()
         self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
         self.play_button.pack()
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
@@ -307,18 +322,25 @@ class Main_Window(Tk):
                 if msg.type == 'program_change': # Every program change sets a channel to an instrument type
                     # We can use that channel and program data to determine the type of instrument for that track
                     # and we can populate an options list for them all, by instrument name
-                    self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + str(msg.program) + "\n")
+                    self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + program_to_instrument_name(msg.program) + "\n")
             self.channel_list.config(state='disabled')
         
     def play_song(self):
         global LoopSong
         global SinglePlay
+        global AllTracks
+        global ChannelToPlay
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
         print("Status of LoopBox var: ", self.LoopBox)
         if self.LoopBox.get() == 1:
             LoopSong = True
         else:
             SinglePlay = True
+        if self.AllTracks.get() == 1:
+            # More code here to grab that channel desired:
+            AllTracks = True
+        else:
+            AllTracks = False
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
