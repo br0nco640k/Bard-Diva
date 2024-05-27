@@ -36,3 +36,5 @@ Planned features:
 - Ability to hold long notes
 
 - Ability to select an octave range target
+
+- Guitar "tone switching" like Bard Music Player
