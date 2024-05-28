@@ -18,8 +18,9 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 
 #### Before running:
 
-Ensure keybindings are set as per BardMusicPlayer's settings:
+Ensure keybindings are set as per the following:
 ![image info](./perf_settings.png)
+![image info](./tone_switching.jpg)
 
 #### Running:
 
