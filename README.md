@@ -8,9 +8,9 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 |:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|
 | `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` |
 
-| Windows 10/11                     |
-|:---------------------------------:|
-| `winget search Python.Python`     |
+| Windows 10/11                     | macOS                  |
+|:---------------------------------:|:----------------------:|
+| `winget search Python.Python`     | `brew install python`  |
 | `then:`                           |
 | `winget install Python.Python.x`  |
 
