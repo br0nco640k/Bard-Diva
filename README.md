@@ -11,7 +11,7 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 | Windows 10/11                     | macOS                  |
 |:---------------------------------:|:----------------------:|
 | `winget search Python.Python`     | `brew install python`  |
-| `then:`                           |
+| `then:`                           | `(requires homebrew)`  |
 | `winget install Python.Python.x`  |
 
 `pip install -r requirements.txt`
