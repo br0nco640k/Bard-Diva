@@ -83,8 +83,12 @@ def frequency_to_key(frequency):
         139: "v",
         131: "y",
         123: "s",
+        110: "a",
         104: "m",
         92:  "n",
+        82:  "i",
+        73:  "u",
+        65:  "y",
     }
 
     return notes.get(frequency,
@@ -101,6 +105,7 @@ def program_to_instrument_name(program):
         5: "Electric Piano 2",
         6: "Harpsichord",
         7: "Clavinet",
+        11: "Vibraphone",
         24: "Accoustic Guitar",
         25: "Accoustic Guitar",
         26: "Electric Guitar",
@@ -112,6 +117,7 @@ def program_to_instrument_name(program):
         40: "Violin",
         41: "Viola",
         42: "Cello",
+        45: "Pizzicato Strings",
         46: "Orchestral Harp",
         47: "Timpani",
         48: "String Ensemble 1",
@@ -190,7 +196,11 @@ def frequency_to_readable_note(frequency):
         131: "C",
         123: "B --octave",
         104: "G# --octave",
-        92:  "F# --ocatave",
+        110: "A --octave",
+        92:  "F# --octave",
+        82:  "E --octave",
+        73:  "D --octave",
+        65:  "C --octave",
     }
 
     return notes.get(frequency,
