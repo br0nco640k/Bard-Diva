@@ -38,3 +38,5 @@ Planned features:
 - Ability to select an octave range target
 
 - Guitar "tone switching" like Bard Music Player
+
+- Wayland option (for Linux users that have moved to Wayland that have issues)
