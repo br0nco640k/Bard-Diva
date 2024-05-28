@@ -286,7 +286,7 @@ def play_midi(filename):
 class Main_Window(Tk):
     # main init:
     def __init__(self):
-        #global LoopBox
+        #global delay_time
         super().__init__()
         self.LoopBox = IntVar()
         self.AllTracks = IntVar()
@@ -296,40 +296,46 @@ class Main_Window(Tk):
         self.label_title = Label(self, text = 'Bard Diva: MIDI player for FFXIV bards')
         self.label_title.pack()
         self.filename = Text(self, width=50, height=4)
-        self.filename.pack()
+        self.filename.pack(pady=10)
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
         self.file_button.pack(pady=10)
-        self.action_label = Label(self, text="Not playing...", height=2)
-        self.action_label.pack()
+        self.action_label = Label(self, text="Not playing...", height=1)
+        self.action_label.pack(pady=10)
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
                                      variable=self.LoopBox,
                                      onvalue=1,
                                      offvalue=0,
-                                     height=2,
+                                     height=1,
                                      width=10)
-        self.loop_song.pack()
+        self.loop_song.pack(pady=10)
         self.play_all = Checkbutton(self,
                                      text="Play all channels",
                                      variable=self.AllTracks,
                                      onvalue=1,
                                      offvalue=0,
-                                     height=2,
+                                     height=1,
                                      width=14)
-        self.play_all.pack()
+        self.play_all.pack(pady=10)
         self.play_all.select()
         self.channel_label = Label(self, text = 'Channel to play:')
         self.channel_label.pack()
         self.channel_to_play = Spinbox(self, from_=0, to=15)
         self.channel_to_play.pack(pady=10)
+        self.delay_label = Label(self, text="Time to delay playback:")
+        self.delay_label.pack(pady=10)
+        var = StringVar(self)
+        self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=var)
+        self.delay_spinner.pack(pady=10)
+        var.set('5')
         self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
         self.play_button.pack(pady=10)
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
         self.stop_button.pack()
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.pack()
-        self.channel_list = Text(self, width=50, height=12)
+        self.channel_list = Text(self, width=50, height=8)
         self.channel_list.pack(pady=10)
         self.channel_list.config(state='disabled')
 
@@ -361,6 +367,8 @@ class Main_Window(Tk):
         global SinglePlay
         global AllTracks
         global ChannelToPlay
+        global delay_time
+        delay_time = int(self.delay_spinner.get())
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
         print("Status of LoopBox var: ", self.LoopBox)
         if self.LoopBox.get() == 1:
