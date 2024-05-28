@@ -35,7 +35,7 @@ Now has the ability to list all channels, with assigned instrument. Can select a
 
 Code has been ported from PySimpleGUI to Tkinter. Now includes the ability to loop songs.
 
-Planned features:
+#### Planned features:
 
 - Ability to pause songs
 
