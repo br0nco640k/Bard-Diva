@@ -8,11 +8,17 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 |:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|
 | `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` |
 
+| Windows 10/11                     | macOS                  |
+|:---------------------------------:|:----------------------:|
+| `winget search Python.Python`     | `brew install python`  |
+| `then:`                           | `(requires homebrew)`  |
+| `winget install Python.Python.x`  |
+
 `pip install -r requirements.txt`
 
 #### Before running:
 
-Ensure keybindings are set as per [BardMusicPlayer's settings](https://bardmusicplayer.com/perf_settings.png).
+Ensure keybindings are set as per BardMusicPlayer's settings:
 ![image info](./perf_settings.png)
 
 #### Running:
@@ -29,10 +35,14 @@ Now has the ability to list all channels, with assigned instrument. Can select a
 
 Code has been ported from PySimpleGUI to Tkinter. Now includes the ability to loop songs.
 
-Planned features:
+#### Planned features:
 
 - Ability to pause songs
 
 - Ability to hold long notes
 
 - Ability to select an octave range target
+
+- Guitar "tone switching" like Bard Music Player
+
+- Wayland option (for Linux users that have moved to Wayland that have issues)
