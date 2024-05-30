@@ -246,7 +246,35 @@ def play_midi(filename):
     # Plays all tracks in the midi file, we may add the ability to focus
     # on a single track later on:
     while (LoopSong) or (SinglePlay):
-        for message in midi_file.play():             
+        for message in midi_file.play():
+            if hasattr(message, "program_change"):
+                # Tone switching:
+                if AllTracks == False:
+                    # We're going to ignore program_change if we aren't in single channel mode.
+                    instrument = message.program
+                    match instrument:
+                        case "24":
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                        case "25":
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                        case "26":
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                        case "27":
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                        case "28":
+                            press("[")
+                            print("Switching to muted guitar mode.")
+                        case "29":
+                            press("-")
+                            print("Switching to overdriven guitar mode.")
+                        case "30":
+                            press("]")
+                            print("Switching to distortion guitar mode.")
+
             if hasattr(message, "velocity"):
                 if int(message.velocity) > 0:
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
@@ -255,6 +283,7 @@ def play_midi(filename):
                         #print(message)
                         print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+
                     elif AllTracks == True:
                         key_to_play = frequency_to_key(note_to_frequency(message.note))
                         press(key_to_play)
@@ -268,9 +297,11 @@ def play_midi(filename):
                 LoopSong = False
                 break
                 #return None
+
         if (QuitPlay):
             SinglePlay = False
             LoopSong = False
+            print("Playback stopped.")
             break
         if (SinglePlay):
             SinglePlay = False
