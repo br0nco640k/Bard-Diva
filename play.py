@@ -72,7 +72,7 @@ def frequency_to_key(frequency):
         277: "k",
         262: "9",
         247: "s",
-        233: ".",
+        233: ",",
         220: "a",
         208: "m",
         196: "p",
@@ -247,33 +247,44 @@ def play_midi(filename):
     # on a single track later on:
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
-            if hasattr(message, "program_change"):
+            if hasattr(message, "program"):
+                print("Program change detected.")
                 # Tone switching:
-                if AllTracks == False:
+                if (True):# AllTracks == False and int(message.channel) == ChannelToPlay:
+                    print(message)
                     # We're going to ignore program_change if we aren't in single channel mode.
                     instrument = message.program
-                    match instrument:
-                        case "24":
+                    match int(instrument):
+                        case 24:
                             press("=")
                             print("Switching to clean guitar mode.")
-                        case "25":
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 25:
                             press("=")
                             print("Switching to clean guitar mode.")
-                        case "26":
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 26:
                             press("=")
                             print("Switching to clean guitar mode.")
-                        case "27":
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 27:
                             press("=")
                             print("Switching to clean guitar mode.")
-                        case "28":
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 28:
                             press("[")
                             print("Switching to muted guitar mode.")
-                        case "29":
+                            app.action_label.config(text="Switching to muted guitar mode.")
+                        case 29:
                             press("-")
                             print("Switching to overdriven guitar mode.")
-                        case "30":
+                            app.action_label.config(text="Switching to overdriven guitar mode.")
+                        case 30:
                             press("]")
                             print("Switching to distortion guitar mode.")
+                            app.action_label.config(text="Switching to distortion guitar mode.")
+                        case _:
+                            pass
 
             if hasattr(message, "velocity"):
                 if int(message.velocity) > 0:
