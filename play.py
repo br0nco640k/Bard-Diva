@@ -252,7 +252,7 @@ def play_midi(filename):
             if hasattr(message, "program"):
                 print("Program change detected.")
                 # Tone switching:
-                if (True):# AllTracks == False and int(message.channel) == ChannelToPlay:
+                if (app.ToneSwitch == 1):# AllTracks == False and int(message.channel) == ChannelToPlay:
                     print(message)
                     # We're going to ignore program_change if we aren't in single channel mode.
                     instrument = message.program
@@ -339,6 +339,7 @@ class Main_Window(Tk):
         #global delay_time
         super().__init__()
         self.LoopBox = IntVar()
+        self.ToneSwitch = IntVar()
         self.AllTracks = IntVar()
         self.title('Bard-Diva')
         self.geometry(str(width) + 'x' + str(height))
@@ -360,6 +361,15 @@ class Main_Window(Tk):
                                      height=1,
                                      width=10)
         self.loop_song.pack(pady=10)
+        self.tone_switching = Checkbutton(self,
+                                     text="Tone switching",
+                                     variable=self.ToneSwitch,
+                                     onvalue=1,
+                                     offvalue=0,
+                                     height=1,
+                                     width=12)
+        self.tone_switching.pack(pady=10)
+        self.tone_switching.select()
         self.play_all = Checkbutton(self,
                                      text="Play all channels",
                                      variable=self.AllTracks,
@@ -385,7 +395,7 @@ class Main_Window(Tk):
         self.stop_button.pack()
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.pack()
-        self.channel_list = Text(self, width=50, height=8)
+        self.channel_list = Text(self, width=50, height=7)
         self.channel_list.pack(pady=10)
         self.channel_list.config(state='disabled')
 
