@@ -107,6 +107,7 @@ def program_to_instrument_name(program):
         6: "Harpsichord",
         7: "Clavinet",
         11: "Vibraphone",
+        14: "Tubular Bells",
         24: "Accoustic Guitar",
         25: "Accoustic Guitar",
         26: "Electric Guitar",
@@ -114,6 +115,7 @@ def program_to_instrument_name(program):
         28: "Electric Guitar (muted)",
         29: "Overdriven Guitar",
         30: "Distortion Guitar",
+        31: "Guitar Harmonics",
         33: "Electric Bass (finger)",
         35: "Fretless Bass",
         40: "Violin",
@@ -283,6 +285,10 @@ def play_midi(filename):
                             press("]")
                             print("Switching to distortion guitar mode.")
                             app.action_label.config(text="Switching to distortion guitar mode.")
+                        case 31:
+                            press(";")
+                            print("Switching to harmonics guitar mode.")
+                            app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
                             pass
 
