@@ -21,6 +21,7 @@ QuitPlay = False
 delay_time = 5
 # For future use:
 AllTracks = False
+GuitarToneSwitch = False
 ChannelToPlay = 0
 # Window geometry:
 width = 900
@@ -249,12 +250,12 @@ def play_midi(filename):
     # on a single track later on:
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
-            if hasattr(message, "program"):
+            if message.type == 'program_change':
                 print("Program change detected.")
                 # Tone switching:
-                if (app.ToneSwitch == 1):# AllTracks == False and int(message.channel) == ChannelToPlay:
+                print(GuitarToneSwitch)
+                if (GuitarToneSwitch):# AllTracks == False and int(message.channel) == ChannelToPlay:
                     print(message)
-                    # We're going to ignore program_change if we aren't in single channel mode.
                     instrument = message.program
                     match int(instrument):
                         case 24:
@@ -304,9 +305,9 @@ def play_midi(filename):
                     elif AllTracks == True:
                         key_to_play = frequency_to_key(note_to_frequency(message.note))
                         press(key_to_play)
-                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         #print(message)
-                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     
             if QuitPlay:
                 #print("Ending song.")
@@ -341,7 +342,7 @@ class Main_Window(Tk):
         self.LoopBox = IntVar()
         self.ToneSwitch = IntVar()
         self.AllTracks = IntVar()
-        self.title('Bard-Diva')
+        self.title('Bard Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
         self.label_title = Label(self, text = 'Bard Diva: MIDI player for FFXIV bards')
@@ -362,12 +363,12 @@ class Main_Window(Tk):
                                      width=10)
         self.loop_song.pack(pady=10)
         self.tone_switching = Checkbutton(self,
-                                     text="Tone switching",
+                                     text="Tone switching (gtr)",
                                      variable=self.ToneSwitch,
                                      onvalue=1,
                                      offvalue=0,
                                      height=1,
-                                     width=12)
+                                     width=18)
         self.tone_switching.pack(pady=10)
         self.tone_switching.select()
         self.play_all = Checkbutton(self,
@@ -428,19 +429,27 @@ class Main_Window(Tk):
         global AllTracks
         global ChannelToPlay
         global delay_time
+        global GuitarToneSwitch
         delay_time = int(self.delay_spinner.get())
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
-        print("Status of LoopBox var: ", self.LoopBox)
+        #print("Status of LoopBox var: ", self.LoopBox.get())
         if self.LoopBox.get() == 1:
             LoopSong = True
+            print("Looping enabled.")
         else:
             SinglePlay = True
+            print("Looping disabled.")
         if self.AllTracks.get() == 1:
             # More code here to grab that channel desired:
             AllTracks = True
         else:
             ChannelToPlay = int(self.channel_to_play.get())
             AllTracks = False
+        #print(self.ToneSwitch.get())
+        if self.ToneSwitch.get() == 1:
+            GuitarToneSwitch = True
+        else:
+            GuitarToneSwitch = False
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
