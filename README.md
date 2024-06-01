@@ -40,6 +40,8 @@ Ensure keybindings are set as per the following:
 
 - GUI implemented in Tkinter to fix license issues
 
+- Guitar "tone switching" like Bard Music Player
+
 #### Planned features:
 
 - Ability to pause songs
@@ -47,8 +49,6 @@ Ensure keybindings are set as per the following:
 - Ability to hold long notes
 
 - Ability to select an octave range target
-
-- Guitar "tone switching" like Bard Music Player
 
 - Ability to selectively enable or disable any channel
 
