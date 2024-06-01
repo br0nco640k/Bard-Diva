@@ -18,8 +18,9 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 
 #### Before running:
 
-Ensure keybindings are set as per BardMusicPlayer's settings:
+Ensure keybindings are set as per the following:
 ![image info](./perf_settings.png)
+![image info](./tone_switching.jpg)
 
 #### Running:
 
@@ -29,11 +30,17 @@ Ensure keybindings are set as per BardMusicPlayer's settings:
 
 - Switch back to FFXIV, and rock out
 
-Playing will start after a 5 second delay. This can be updated in play.py, under the sleep() function.
+#### New features:
 
-Now has the ability to list all channels, with assigned instrument. Can select a single channel or play all channels.
+- Play all channels or just play a single channel, which is good for songs that work better with one or the other
 
-Code has been ported from PySimpleGUI to Tkinter. Now includes the ability to loop songs.
+- Selectable delay time in GUI
+
+- Lists all channels and instruments assigned, including tone switches
+
+- GUI implemented in Tkinter to fix license issues
+
+- Guitar "tone switching" like Bard Music Player
 
 #### Planned features:
 
@@ -43,6 +50,6 @@ Code has been ported from PySimpleGUI to Tkinter. Now includes the ability to lo
 
 - Ability to select an octave range target
 
-- Guitar "tone switching" like Bard Music Player
+- Ability to selectively enable or disable any channel
 
 - Wayland option (for Linux users that have moved to Wayland that have issues)

@@ -21,6 +21,7 @@ QuitPlay = False
 delay_time = 5
 # For future use:
 AllTracks = False
+GuitarToneSwitch = False
 ChannelToPlay = 0
 # Window geometry:
 width = 900
@@ -46,6 +47,7 @@ def frequency_to_key(frequency):
         1319: "3",
         1175: "2",
         1047: "8",
+        1109: "d",
         988: "7",
         932: "j",
         880: "6",
@@ -71,7 +73,7 @@ def frequency_to_key(frequency):
         277: "k",
         262: "9",
         247: "s",
-        233: ".",
+        233: ",",
         220: "a",
         208: "m",
         196: "p",
@@ -106,6 +108,7 @@ def program_to_instrument_name(program):
         6: "Harpsichord",
         7: "Clavinet",
         11: "Vibraphone",
+        14: "Tubular Bells",
         24: "Accoustic Guitar",
         25: "Accoustic Guitar",
         26: "Electric Guitar",
@@ -113,6 +116,7 @@ def program_to_instrument_name(program):
         28: "Electric Guitar (muted)",
         29: "Overdriven Guitar",
         30: "Distortion Guitar",
+        31: "Guitar Harmonics",
         33: "Electric Bass (finger)",
         35: "Fretless Bass",
         40: "Violin",
@@ -162,6 +166,7 @@ def frequency_to_readable_note(frequency):
         1397: "F +octave",
         1319: "E +octave",
         1175: "D +octave",
+        1109: "C# +octave",
         1047: "C+1",
         988: "B +octave",
         932: "B flat +octave",
@@ -244,7 +249,50 @@ def play_midi(filename):
     # Plays all tracks in the midi file, we may add the ability to focus
     # on a single track later on:
     while (LoopSong) or (SinglePlay):
-        for message in midi_file.play():             
+        for message in midi_file.play():
+            if message.type == 'program_change':
+                print("Program change detected.")
+                # Tone switching:
+                print(GuitarToneSwitch)
+                if (GuitarToneSwitch):# AllTracks == False and int(message.channel) == ChannelToPlay:
+                    print(message)
+                    instrument = message.program
+                    match int(instrument):
+                        case 24:
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 25:
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 26:
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 27:
+                            press("=")
+                            print("Switching to clean guitar mode.")
+                            app.action_label.config(text="Switching to clean guitar mode.")
+                        case 28:
+                            press("[")
+                            print("Switching to muted guitar mode.")
+                            app.action_label.config(text="Switching to muted guitar mode.")
+                        case 29:
+                            press("-")
+                            print("Switching to overdriven guitar mode.")
+                            app.action_label.config(text="Switching to overdriven guitar mode.")
+                        case 30:
+                            press("]")
+                            print("Switching to distortion guitar mode.")
+                            app.action_label.config(text="Switching to distortion guitar mode.")
+                        case 31:
+                            press(";")
+                            print("Switching to harmonics guitar mode.")
+                            app.action_label.config(text="Switching to harmonics guitar mode.")
+                        case _:
+                            pass
+
             if hasattr(message, "velocity"):
                 if int(message.velocity) > 0:
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
@@ -253,12 +301,13 @@ def play_midi(filename):
                         #print(message)
                         print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+
                     elif AllTracks == True:
                         key_to_play = frequency_to_key(note_to_frequency(message.note))
                         press(key_to_play)
-                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         #print(message)
-                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     
             if QuitPlay:
                 #print("Ending song.")
@@ -266,9 +315,11 @@ def play_midi(filename):
                 LoopSong = False
                 break
                 #return None
+
         if (QuitPlay):
             SinglePlay = False
             LoopSong = False
+            print("Playback stopped.")
             break
         if (SinglePlay):
             SinglePlay = False
@@ -289,8 +340,9 @@ class Main_Window(Tk):
         #global delay_time
         super().__init__()
         self.LoopBox = IntVar()
+        self.ToneSwitch = IntVar()
         self.AllTracks = IntVar()
-        self.title('Bard-Diva')
+        self.title('Bard Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
         self.label_title = Label(self, text = 'Bard Diva: MIDI player for FFXIV bards')
@@ -310,6 +362,15 @@ class Main_Window(Tk):
                                      height=1,
                                      width=10)
         self.loop_song.pack(pady=10)
+        self.tone_switching = Checkbutton(self,
+                                     text="Tone switching (gtr)",
+                                     variable=self.ToneSwitch,
+                                     onvalue=1,
+                                     offvalue=0,
+                                     height=1,
+                                     width=18)
+        self.tone_switching.pack(pady=10)
+        self.tone_switching.select()
         self.play_all = Checkbutton(self,
                                      text="Play all channels",
                                      variable=self.AllTracks,
@@ -335,7 +396,7 @@ class Main_Window(Tk):
         self.stop_button.pack()
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.pack()
-        self.channel_list = Text(self, width=50, height=8)
+        self.channel_list = Text(self, width=50, height=7)
         self.channel_list.pack(pady=10)
         self.channel_list.config(state='disabled')
 
@@ -368,19 +429,27 @@ class Main_Window(Tk):
         global AllTracks
         global ChannelToPlay
         global delay_time
+        global GuitarToneSwitch
         delay_time = int(self.delay_spinner.get())
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
-        print("Status of LoopBox var: ", self.LoopBox)
+        #print("Status of LoopBox var: ", self.LoopBox.get())
         if self.LoopBox.get() == 1:
             LoopSong = True
+            print("Looping enabled.")
         else:
             SinglePlay = True
+            print("Looping disabled.")
         if self.AllTracks.get() == 1:
             # More code here to grab that channel desired:
             AllTracks = True
         else:
             ChannelToPlay = int(self.channel_to_play.get())
             AllTracks = False
+        #print(self.ToneSwitch.get())
+        if self.ToneSwitch.get() == 1:
+            GuitarToneSwitch = True
+        else:
+            GuitarToneSwitch = False
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
