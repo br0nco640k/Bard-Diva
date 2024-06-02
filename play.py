@@ -16,6 +16,7 @@ import time as Time
 LoopSong = False # Set to True for song looping, will add a GUI option later
 SinglePlay = False
 QuitPlay = False
+HoldNotes = False
 
 # We'll add gui option to set the delay time for window switching:
 delay_time = 5
@@ -25,7 +26,7 @@ GuitarToneSwitch = False
 ChannelToPlay = 0
 # Window geometry:
 width = 900
-height = 1100
+height = 1200
 track_name=""
 
 
@@ -301,23 +302,50 @@ def play_midi(filename):
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
                             pass
-
-            if hasattr(message, "velocity"):
-                if int(message.velocity) > 0:
+            # we're going to start looking at message.type == note_on or note_off:
+            if (HoldNotes):
+                # I need to push my KeyDown's into an array so that I can pop them all
+                # and release them if I hit stop so that I can't end with one or more
+                # keys still stuck down
+                if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
-                        key_to_play = frequency_to_key(note_to_frequency(message.note))
-                        press(key_to_play)
-                        #print(message)
-                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            keyDown(key_to_play)
+                            #print(message)
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     elif AllTracks == True:
-                        key_to_play = frequency_to_key(note_to_frequency(message.note))
-                        press(key_to_play)
-                        print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                        #print(message)
-                        app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                    
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            keyDown(key_to_play)
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            #print(message)
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                if message.type == 'note_off':
+                    # This might do weird things if the note isn't found, so we'll debug accordingly:
+                    key_to_release = frequency_to_key(note_to_frequency(message.note))
+                    if len(key_to_release) > 1:
+                        pass
+                    else:
+                        print("Releasing key")
+                        keyUp(key_to_release)
+            
+            else:
+                if hasattr(message, "velocity"):
+                    if int(message.velocity) > 0:
+                        if AllTracks == False and int(message.channel) == ChannelToPlay:
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            press(key_to_play)
+                            #print(message)
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+
+                        elif AllTracks == True:
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            press(key_to_play)
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            #print(message)
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        
             if QuitPlay:
                 #print("Ending song.")
                 SinglePlay = False
@@ -351,6 +379,7 @@ class Main_Window(Tk):
         self.LoopBox = IntVar()
         self.ToneSwitch = IntVar()
         self.AllTracks = IntVar()
+        self.LongNotes = IntVar()
         self.title('Bard Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
@@ -371,6 +400,14 @@ class Main_Window(Tk):
                                      height=1,
                                      width=10)
         self.loop_song.pack(pady=10)
+        self.hold_long_notes = Checkbutton(self,
+                                     text="Hold long notes",
+                                     variable=self.LongNotes,
+                                     onvalue=1,
+                                     offvalue=0,
+                                     height=1,
+                                     width=15)
+        self.hold_long_notes.pack(pady=10)
         self.tone_switching = Checkbutton(self,
                                      text="Tone switching (gtr)",
                                      variable=self.ToneSwitch,
@@ -439,9 +476,13 @@ class Main_Window(Tk):
         global ChannelToPlay
         global delay_time
         global GuitarToneSwitch
+        global HoldNotes
         delay_time = int(self.delay_spinner.get())
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
-        #print("Status of LoopBox var: ", self.LoopBox.get())
+        if self.LongNotes.get() == 1:
+            HoldNotes = True
+        else:
+            HoldNotes - False
         if self.LoopBox.get() == 1:
             LoopSong = True
             print("Looping enabled.")
@@ -449,12 +490,10 @@ class Main_Window(Tk):
             SinglePlay = True
             print("Looping disabled.")
         if self.AllTracks.get() == 1:
-            # More code here to grab that channel desired:
             AllTracks = True
         else:
             ChannelToPlay = int(self.channel_to_play.get())
             AllTracks = False
-        #print(self.ToneSwitch.get())
         if self.ToneSwitch.get() == 1:
             GuitarToneSwitch = True
         else:
