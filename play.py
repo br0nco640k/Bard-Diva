@@ -88,10 +88,14 @@ def frequency_to_key(frequency):
         123: "s",
         110: "a",
         104: "m",
+        98:  "p",
         92:  "n",
         82:  "i",
         73:  "u",
         65:  "y",
+        62:  "s",
+        55:  "a",
+        49:  "p",
     }
 
     return notes.get(frequency,
@@ -206,7 +210,7 @@ def frequency_to_readable_note(frequency):
         233: "B flat -octave",
         220: "A -octave",
         208: "G# -octave",
-        196: "G",
+        196: "G -octave",
         185: "F# -octave",
         175: "F",
         165: "E",
@@ -217,10 +221,14 @@ def frequency_to_readable_note(frequency):
         123: "B --octave",
         104: "G# --octave",
         110: "A --octave",
+        98:  "G --octave",
         92:  "F# --octave",
         82:  "E --octave",
         73:  "D --octave",
         65:  "C --octave",
+        62:  "B ---octave",
+        55:  "A ---octave",
+        49:  "G ---octave",
     }
 
     return notes.get(frequency,
@@ -306,7 +314,7 @@ def play_midi(filename):
             if (HoldNotes):
                 # I need to push my KeyDown's into an array so that I can pop them all
                 # and release them if I hit stop so that I can't end with one or more
-                # keys still stuck down
+                # keys still stuck down.
                 if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
@@ -401,12 +409,12 @@ class Main_Window(Tk):
                                      width=10)
         self.loop_song.pack(pady=10)
         self.hold_long_notes = Checkbutton(self,
-                                     text="Hold long notes",
+                                     text="Hold long notes (experimental)",
                                      variable=self.LongNotes,
                                      onvalue=1,
                                      offvalue=0,
                                      height=1,
-                                     width=15)
+                                     width=25)
         self.hold_long_notes.pack(pady=10)
         self.tone_switching = Checkbutton(self,
                                      text="Tone switching (gtr)",
@@ -482,7 +490,7 @@ class Main_Window(Tk):
         if self.LongNotes.get() == 1:
             HoldNotes = True
         else:
-            HoldNotes - False
+            HoldNotes = False
         if self.LoopBox.get() == 1:
             LoopSong = True
             print("Looping enabled.")
