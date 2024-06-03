@@ -17,6 +17,7 @@ LoopSong = False # Set to True for song looping, will add a GUI option later
 SinglePlay = False
 QuitPlay = False
 HoldNotes = False
+HeldKeys = ""
 
 # We'll add gui option to set the delay time for window switching:
 delay_time = 5
@@ -240,6 +241,8 @@ def play_midi(filename):
     global QuitPlay
     global AllTracks
     global ChannelToPlay
+    global HeldKeys
+    global HoldNotes
     QuitPlay = False
     print("Looping set to: ", LoopSong)
     print("Playing channel:", ChannelToPlay)
@@ -312,24 +315,46 @@ def play_midi(filename):
                             pass
             # we're going to start looking at message.type == note_on or note_off:
             if (HoldNotes):
-                # I need to push my KeyDown's into an array so that I can pop them all
-                # and release them if I hit stop so that I can't end with one or more
-                # keys still stuck down.
                 if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            # Here we're releasing all previous keys:
+                            while (len(HeldKeys) > 0):
+                                tempkey = HeldKeys[0]
+                                keyUp(tempkey)
+                                HeldKeys = HeldKeys[1:]
+                                #print(len(HeldKeys))
+                                if QuitPlay:
+                                    #print("Ending song.")
+                                    SinglePlay = False
+                                    LoopSong = False
+                                    break
                             keyDown(key_to_play)
+                            # Adding the newly held key to our "character array", aka our string:
+                            HeldKeys += key_to_play
                             #print(message)
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     elif AllTracks == True:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            # Here we're releasing all previous keys:
+                            while (len(HeldKeys) > 0):
+                                tempkey = HeldKeys[0]
+                                keyUp(tempkey)
+                                HeldKeys = HeldKeys[1:]
+                                #print(len(HeldKeys))
+                                if QuitPlay:
+                                    #print("Ending song.")
+                                    SinglePlay = False
+                                    LoopSong = False
+                                    break
                             keyDown(key_to_play)
+                            # Adding the newly held key to our "character array", aka our string:
+                            HeldKeys += key_to_play
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             #print(message)
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                 if message.type == 'note_off':
-                    # This might do weird things if the note isn't found, so we'll debug accordingly:
                     key_to_release = frequency_to_key(note_to_frequency(message.note))
                     if len(key_to_release) > 1:
                         pass
@@ -365,6 +390,11 @@ def play_midi(filename):
             SinglePlay = False
             LoopSong = False
             print("Playback stopped.")
+            HoldNotes = False
+            while (len(HeldKeys) > 0):
+                tempkey = HeldKeys[0]
+                keyUp(tempkey)
+                HeldKeys = HeldKeys[1:]
             break
         if (SinglePlay):
             SinglePlay = False
@@ -375,6 +405,7 @@ def play_midi(filename):
     app.action_label.config(text="Ending song.")
     app.play_button.config(state='active')
     app.stop_button.config(state='disabled')
+    QuitPlay = False
 
 # The NEW GUI stuff begins here:
 
