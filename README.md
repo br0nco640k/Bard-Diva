@@ -36,7 +36,7 @@ Ensure keybindings are set as per the following:
 
 - Selectable delay time in GUI
 
-- Lists all channels and instruments assigned, including tone switches
+- Lists all channels and instruments assigned, including tone switches (works for MIDI files that have a properly encoded program_change to identify the instrument for each channel, and for files that are encoded for tone switching for Bard Music Player)
 
 - GUI implemented in Tkinter to fix license issues
 
