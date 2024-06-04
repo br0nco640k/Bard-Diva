@@ -55,3 +55,9 @@ Ensure keybindings are set as per the following:
 - Ability to selectively enable or disable any channel
 
 - Wayland option (for Linux users that have moved to Wayland that have issues)
+
+#### Some notes for Windows 10/11 and macOS:
+
+- Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line.
+
+- macOS command line example above requires Homebrew
