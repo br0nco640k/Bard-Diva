@@ -12,6 +12,11 @@ from pyautogui import keyDown
 from pyautogui import keyUp
 import time as Time
 
+################################################################################
+# New GUI and features by br0nco640k
+# Thanks to angrymarker, realAbitbol and sirkhancision for their commits!
+################################################################################
+
 # Some globals for adding a looping option to the GUI later on:
 LoopSong = False # Set to True for song looping, will add a GUI option later
 SinglePlay = False
@@ -505,8 +510,8 @@ class Main_Window(Tk):
             track_name=self.file_to_play
             self.play_button.config(state="active")
             self.filename.config(state='disabled')
-            ### Things go here:
             midi_file = mido.MidiFile(track_name, clip=True)
+            print(midi_file.length)
             self.channel_list.config(state='normal')
             self.channel_list.delete("1.0", END)
             for msg in midi_file:
