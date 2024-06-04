@@ -277,18 +277,18 @@ def play_midi(filename):
 
     # Some additional notes for future functionality:
     # midi_file.length will return the total playback time in seconds
-    # midi_file.MidiTrack has sub properties that we can use to get track names, etc.
 
-    # Play the MIDI file
-    # Plays all tracks in the midi file, we may add the ability to focus
-    # on a single track later on:
+    # Play the MIDI file:
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
+            # program_change is used for assigning an instrument to a channel.
+            # Bard Music Player can also use them in the middle of a song
+            # for guitar tone switching:
             if message.type == 'program_change':
                 print("Program change detected.")
                 # Tone switching:
                 print(GuitarToneSwitch)
-                if (GuitarToneSwitch):# AllTracks == False and int(message.channel) == ChannelToPlay:
+                if (GuitarToneSwitch):
                     print(message)
                     instrument = message.program
                     match int(instrument):
@@ -326,7 +326,7 @@ def play_midi(filename):
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
                             pass
-            # we're going to start looking at message.type == note_on or note_off:
+            # This option is very experimental, and will get more work later on:
             if (HoldNotes):
                 if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
@@ -372,38 +372,38 @@ def play_midi(filename):
                     if len(key_to_release) > 1:
                         pass
                     else:
+                        # We also need to find it in our held keys array and remove it
                         print("Releasing key")
                         keyUp(key_to_release)
-            
+
             else:
                 if hasattr(message, "velocity"):
                     if int(message.velocity) > 0:
+                        # New single channel option:
                         if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
                             press(key_to_play)
-                            #print(message)
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
 
+                        # This is the original play option, which is well tested:
                         elif AllTracks == True:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
                             press(key_to_play)
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                            #print(message)
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         
             if QuitPlay:
-                #print("Ending song.")
                 SinglePlay = False
                 LoopSong = False
                 break
-                #return None
 
         if (QuitPlay):
             SinglePlay = False
             LoopSong = False
             print("Playback stopped.")
             HoldNotes = False
+            # Here we need to make sure that EVERY remaining held key gets released:
             while (len(HeldKeys) > 0):
                 tempkey = HeldKeys[0]
                 keyUp(tempkey)
@@ -426,7 +426,6 @@ def play_midi(filename):
 class Main_Window(Tk):
     # main init:
     def __init__(self):
-        #global delay_time
         super().__init__()
         self.LoopBox = IntVar()
         self.ToneSwitch = IntVar()
@@ -442,7 +441,7 @@ class Main_Window(Tk):
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
         self.file_button.pack(pady=10)
-        self.action_label = Label(self, text="Not playing...", height=1)
+        self.action_label = Label(self, text="Not playing.", height=1)
         self.action_label.pack(pady=10)
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
@@ -484,10 +483,10 @@ class Main_Window(Tk):
         self.channel_to_play.pack(pady=10)
         self.delay_label = Label(self, text="Time to delay playback:")
         self.delay_label.pack(pady=10)
-        var = StringVar(self)
-        self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=var)
+        playback_delay = StringVar(self)
+        self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=playback_delay)
         self.delay_spinner.pack(pady=10)
-        var.set('5')
+        playback_delay.set('5')
         self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
         self.play_button.pack(pady=10)
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
@@ -529,6 +528,8 @@ class Main_Window(Tk):
         global delay_time
         global GuitarToneSwitch
         global HoldNotes
+        # How long we'll wait before playback begins, so the user has time to switch
+        # back over to FFXIV:
         delay_time = int(self.delay_spinner.get())
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
         if self.LongNotes.get() == 1:
@@ -537,9 +538,11 @@ class Main_Window(Tk):
             HoldNotes = False
         if self.LoopBox.get() == 1:
             LoopSong = True
+            SinglePlay = False
             print("Looping enabled.")
         else:
             SinglePlay = True
+            LoopSong = False
             print("Looping disabled.")
         if self.AllTracks.get() == 1:
             AllTracks = True
@@ -553,7 +556,6 @@ class Main_Window(Tk):
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
-        #play_midi(track_name)
 
     def stop_playing(self):
         global QuitPlay
