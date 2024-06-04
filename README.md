@@ -42,6 +42,8 @@ Ensure keybindings are set as per the following:
 
 - Guitar "tone switching" like Bard Music Player
 
+- Song progress bar
+
 - Ability to hold long notes (highly experimental right now)
 
 #### Planned features:
