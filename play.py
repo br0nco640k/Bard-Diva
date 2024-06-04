@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import IntVar
 from tkinter import filedialog
 from _thread import start_new_thread
+from tkinter import ttk
 import mido 
 from pyautogui import press
 # Lets us hold notes by doing keyDown and keyUp:
@@ -12,10 +13,17 @@ from pyautogui import keyDown
 from pyautogui import keyUp
 import time as Time
 
+################################################################################
+# New GUI and features by br0nco640k
+# Thanks to angrymarker, realAbitbol and sirkhancision for their commits!
+################################################################################
+
 # Some globals for adding a looping option to the GUI later on:
 LoopSong = False # Set to True for song looping, will add a GUI option later
 SinglePlay = False
 QuitPlay = False
+HoldNotes = False
+HeldKeys = ""
 
 # We'll add gui option to set the delay time for window switching:
 delay_time = 5
@@ -25,7 +33,7 @@ GuitarToneSwitch = False
 ChannelToPlay = 0
 # Window geometry:
 width = 900
-height = 1100
+height = 1200
 track_name=""
 
 
@@ -87,10 +95,14 @@ def frequency_to_key(frequency):
         123: "s",
         110: "a",
         104: "m",
+        98:  "p",
         92:  "n",
         82:  "i",
         73:  "u",
         65:  "y",
+        62:  "s",
+        55:  "a",
+        49:  "p",
     }
 
     return notes.get(frequency,
@@ -108,7 +120,10 @@ def program_to_instrument_name(program):
         6: "Harpsichord",
         7: "Clavinet",
         11: "Vibraphone",
+        16: "Drawbar Organ",
         14: "Tubular Bells",
+        19: "Church Organ",
+        22: "Harmonica",
         24: "Accoustic Guitar",
         25: "Accoustic Guitar",
         26: "Electric Guitar",
@@ -117,11 +132,18 @@ def program_to_instrument_name(program):
         29: "Overdriven Guitar",
         30: "Distortion Guitar",
         31: "Guitar Harmonics",
+        32: "Accoustic Bass",
         33: "Electric Bass (finger)",
+        34: "Fretless Bass",
         35: "Fretless Bass",
+        36: "Slap Bass 1",
+        37: "Slap Bass 2",
+        38: "Synth Bass 1",
+        39: "Synth Bass 2",
         40: "Violin",
         41: "Viola",
         42: "Cello",
+        44: "Tremolo Strings",
         45: "Pizzicato Strings",
         46: "Orchestral Harp",
         47: "Timpani",
@@ -129,11 +151,14 @@ def program_to_instrument_name(program):
         49: "String Ensemble 2",
         50: "Synth Strings 1",
         51: "Synth Strings 2",
+        52: "Choir Aahs",
         53: "Voice Oohs",
+        54: "Synth Choir",
         56: "Trumpet",
         57: "Trombone",
         58: "Tuba",
         60: "French Horn",
+        61: "Brass Section",
         64: "Soprano Sax",
         65: "Alto Sax",
         66: "Tenor Sax",
@@ -146,10 +171,14 @@ def program_to_instrument_name(program):
         73: "Flute",
         74: "Recorder",
         75: "Pan Flute",
+        90: "Pad 3 (polysynth)",
         93: "Pad 6 (mettalic)",
+        95: "Pad 8 (sweep)",
+        98: "FX 3 (crystal)",
         104: "Sitar",
         105: "Banjo",
         110: "Fiddle",
+        117: "Melodic Tom",
     }
 
     return programs.get(program,
@@ -196,7 +225,7 @@ def frequency_to_readable_note(frequency):
         233: "B flat -octave",
         220: "A -octave",
         208: "G# -octave",
-        196: "G",
+        196: "G -octave",
         185: "F# -octave",
         175: "F",
         165: "E",
@@ -207,10 +236,14 @@ def frequency_to_readable_note(frequency):
         123: "B --octave",
         104: "G# --octave",
         110: "A --octave",
+        98:  "G --octave",
         92:  "F# --octave",
         82:  "E --octave",
         73:  "D --octave",
         65:  "C --octave",
+        62:  "B ---octave",
+        55:  "A ---octave",
+        49:  "G ---octave",
     }
 
     return notes.get(frequency,
@@ -222,6 +255,8 @@ def play_midi(filename):
     global QuitPlay
     global AllTracks
     global ChannelToPlay
+    global HeldKeys
+    global HoldNotes
     QuitPlay = False
     print("Looping set to: ", LoopSong)
     print("Playing channel:", ChannelToPlay)
@@ -243,18 +278,24 @@ def play_midi(filename):
 
     # Some additional notes for future functionality:
     # midi_file.length will return the total playback time in seconds
-    # midi_file.MidiTrack has sub properties that we can use to get track names, etc.
 
-    # Play the MIDI file
-    # Plays all tracks in the midi file, we may add the ability to focus
-    # on a single track later on:
+    # Play the MIDI file:
+    start_time = Time.time()
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
+            current_time = Time.time()
+            elapsed_time = (current_time - start_time)
+            # Set our new progress_bar widget:
+            app.progress_bar['value'] = elapsed_time/float(midi_file.length) * 100
+            app.update()
+            # program_change is used for assigning an instrument to a channel.
+            # Bard Music Player can also use them in the middle of a song
+            # for guitar tone switching:
             if message.type == 'program_change':
                 print("Program change detected.")
                 # Tone switching:
                 print(GuitarToneSwitch)
-                if (GuitarToneSwitch):# AllTracks == False and int(message.channel) == ChannelToPlay:
+                if (GuitarToneSwitch):
                     print(message)
                     instrument = message.program
                     match int(instrument):
@@ -292,44 +333,105 @@ def play_midi(filename):
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
                             pass
-
-            if hasattr(message, "velocity"):
-                if int(message.velocity) > 0:
+            # This option is very experimental, and will get more work later on:
+            if (HoldNotes):
+                if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
-                        key_to_play = frequency_to_key(note_to_frequency(message.note))
-                        press(key_to_play)
-                        #print(message)
-                        print("Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                        app.action_label.config(text="Playing: " + frequency_to_readable_note(note_to_frequency(message.note)))
-
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            # Here we're releasing all previous keys:
+                            while (len(HeldKeys) > 0):
+                                tempkey = HeldKeys[0]
+                                keyUp(tempkey)
+                                HeldKeys = HeldKeys[1:]
+                                #print(len(HeldKeys))
+                                if QuitPlay:
+                                    #print("Ending song.")
+                                    SinglePlay = False
+                                    LoopSong = False
+                                    break
+                            keyDown(key_to_play)
+                            # Adding the newly held key to our "character array", aka our string:
+                            HeldKeys += key_to_play
+                            #print(message)
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     elif AllTracks == True:
-                        key_to_play = frequency_to_key(note_to_frequency(message.note))
-                        press(key_to_play)
-                        print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                        #print(message)
-                        app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                    
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            # Here we're releasing all previous keys:
+                            while (len(HeldKeys) > 0):
+                                tempkey = HeldKeys[0]
+                                keyUp(tempkey)
+                                HeldKeys = HeldKeys[1:]
+                                #print(len(HeldKeys))
+                                if QuitPlay:
+                                    #print("Ending song.")
+                                    SinglePlay = False
+                                    LoopSong = False
+                                    break
+                            keyDown(key_to_play)
+                            # Adding the newly held key to our "character array", aka our string:
+                            HeldKeys += key_to_play
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            #print(message)
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                if message.type == 'note_off':
+                    key_to_release = frequency_to_key(note_to_frequency(message.note))
+                    if len(key_to_release) > 1:
+                        pass
+                    else:
+                        # We also need to find it in our held keys array and remove it
+                        print("Releasing key")
+                        keyUp(key_to_release)
+
+            else:
+                if hasattr(message, "velocity"):
+                    if int(message.velocity) > 0:
+                        # New single channel option:
+                        if AllTracks == False and int(message.channel) == ChannelToPlay:
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            press(key_to_play)
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+
+                        # This is the original play option, which is well tested:
+                        elif AllTracks == True:
+                            key_to_play = frequency_to_key(note_to_frequency(message.note))
+                            press(key_to_play)
+                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                        
             if QuitPlay:
-                #print("Ending song.")
                 SinglePlay = False
                 LoopSong = False
                 break
-                #return None
 
         if (QuitPlay):
             SinglePlay = False
             LoopSong = False
             print("Playback stopped.")
+            HoldNotes = False
+            # Here we need to make sure that EVERY remaining held key gets released:
+            while (len(HeldKeys) > 0):
+                tempkey = HeldKeys[0]
+                keyUp(tempkey)
+                HeldKeys = HeldKeys[1:]
             break
         if (SinglePlay):
             SinglePlay = False
         else:
             print("Looping song: ", filename)
+            start_time = Time.time()
+            current_time = Time.time()
+            elapsed_time = 0.0
             app.action_label.config(text="Looping song.")
+            app.progress_bar['value'] = 0.0
+            app.update()
     print("Ending song.")
     app.action_label.config(text="Ending song.")
     app.play_button.config(state='active')
     app.stop_button.config(state='disabled')
+    #app.progress_bar.step(0.0)
+    QuitPlay = False
 
 # The NEW GUI stuff begins here:
 
@@ -337,11 +439,11 @@ def play_midi(filename):
 class Main_Window(Tk):
     # main init:
     def __init__(self):
-        #global delay_time
         super().__init__()
         self.LoopBox = IntVar()
         self.ToneSwitch = IntVar()
         self.AllTracks = IntVar()
+        self.LongNotes = IntVar()
         self.title('Bard Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
@@ -352,7 +454,7 @@ class Main_Window(Tk):
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
         self.file_button.pack(pady=10)
-        self.action_label = Label(self, text="Not playing...", height=1)
+        self.action_label = Label(self, text="Not playing.", height=1)
         self.action_label.pack(pady=10)
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
@@ -362,6 +464,14 @@ class Main_Window(Tk):
                                      height=1,
                                      width=10)
         self.loop_song.pack(pady=10)
+        self.hold_long_notes = Checkbutton(self,
+                                     text="Hold long notes (experimental)",
+                                     variable=self.LongNotes,
+                                     onvalue=1,
+                                     offvalue=0,
+                                     height=1,
+                                     width=25)
+        self.hold_long_notes.pack(pady=10)
         self.tone_switching = Checkbutton(self,
                                      text="Tone switching (gtr)",
                                      variable=self.ToneSwitch,
@@ -386,14 +496,17 @@ class Main_Window(Tk):
         self.channel_to_play.pack(pady=10)
         self.delay_label = Label(self, text="Time to delay playback:")
         self.delay_label.pack(pady=10)
-        var = StringVar(self)
-        self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=var)
+        playback_delay = StringVar(self)
+        self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=playback_delay)
         self.delay_spinner.pack(pady=10)
-        var.set('5')
+        playback_delay.set('5')
         self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
         self.play_button.pack(pady=10)
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
         self.stop_button.pack()
+        self.progress_bar = ttk.Progressbar(length=800)
+        self.progress_bar.pack(pady=10)
+        # progress_bar.step(float) to set current song progress
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.pack()
         self.channel_list = Text(self, width=50, height=7)
@@ -406,14 +519,16 @@ class Main_Window(Tk):
                                                        title="Select MIDI file",
                                                        filetypes=[("MIDI files", "*.mid")])
         if self.file_to_play:
+            self.progress_bar['value'] = 0.0
+            self.update()
             self.filename.config(state='normal')
             self.filename.delete("1.0", END)
             self.filename.insert(END, self.file_to_play)
             track_name=self.file_to_play
             self.play_button.config(state="active")
             self.filename.config(state='disabled')
-            ### Things go here:
             midi_file = mido.MidiFile(track_name, clip=True)
+            print(midi_file.length)
             self.channel_list.config(state='normal')
             self.channel_list.delete("1.0", END)
             for msg in midi_file:
@@ -430,22 +545,30 @@ class Main_Window(Tk):
         global ChannelToPlay
         global delay_time
         global GuitarToneSwitch
+        global HoldNotes
+        self.progress_bar['value'] = 0.0
+        self.update()
+        # How long we'll wait before playback begins, so the user has time to switch
+        # back over to FFXIV:
         delay_time = int(self.delay_spinner.get())
         self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
-        #print("Status of LoopBox var: ", self.LoopBox.get())
+        if self.LongNotes.get() == 1:
+            HoldNotes = True
+        else:
+            HoldNotes = False
         if self.LoopBox.get() == 1:
             LoopSong = True
+            SinglePlay = False
             print("Looping enabled.")
         else:
             SinglePlay = True
+            LoopSong = False
             print("Looping disabled.")
         if self.AllTracks.get() == 1:
-            # More code here to grab that channel desired:
             AllTracks = True
         else:
             ChannelToPlay = int(self.channel_to_play.get())
             AllTracks = False
-        #print(self.ToneSwitch.get())
         if self.ToneSwitch.get() == 1:
             GuitarToneSwitch = True
         else:
@@ -453,7 +576,6 @@ class Main_Window(Tk):
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
-        #play_midi(track_name)
 
     def stop_playing(self):
         global QuitPlay
