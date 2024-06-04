@@ -5,6 +5,7 @@ from tkinter import *
 from tkinter import IntVar
 from tkinter import filedialog
 from _thread import start_new_thread
+from tkinter import ttk
 import mido 
 from pyautogui import press
 # Lets us hold notes by doing keyDown and keyUp:
@@ -279,8 +280,14 @@ def play_midi(filename):
     # midi_file.length will return the total playback time in seconds
 
     # Play the MIDI file:
+    start_time = Time.time()
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
+            current_time = Time.time()
+            elapsed_time = (current_time - start_time)
+            # Set our new progress_bar widget:
+            app.progress_bar['value'] = elapsed_time/float(midi_file.length) * 100
+            app.update()
             # program_change is used for assigning an instrument to a channel.
             # Bard Music Player can also use them in the middle of a song
             # for guitar tone switching:
@@ -413,11 +420,17 @@ def play_midi(filename):
             SinglePlay = False
         else:
             print("Looping song: ", filename)
+            start_time = Time.time()
+            current_time = Time.time()
+            elapsed_time = 0.0
             app.action_label.config(text="Looping song.")
+            app.progress_bar['value'] = 0.0
+            app.update()
     print("Ending song.")
     app.action_label.config(text="Ending song.")
     app.play_button.config(state='active')
     app.stop_button.config(state='disabled')
+    #app.progress_bar.step(0.0)
     QuitPlay = False
 
 # The NEW GUI stuff begins here:
@@ -491,6 +504,9 @@ class Main_Window(Tk):
         self.play_button.pack(pady=10)
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
         self.stop_button.pack()
+        self.progress_bar = ttk.Progressbar(length=800)
+        self.progress_bar.pack(pady=10)
+        # progress_bar.step(float) to set current song progress
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.pack()
         self.channel_list = Text(self, width=50, height=7)
@@ -503,6 +519,8 @@ class Main_Window(Tk):
                                                        title="Select MIDI file",
                                                        filetypes=[("MIDI files", "*.mid")])
         if self.file_to_play:
+            self.progress_bar['value'] = 0.0
+            self.update()
             self.filename.config(state='normal')
             self.filename.delete("1.0", END)
             self.filename.insert(END, self.file_to_play)
@@ -528,6 +546,8 @@ class Main_Window(Tk):
         global delay_time
         global GuitarToneSwitch
         global HoldNotes
+        self.progress_bar['value'] = 0.0
+        self.update()
         # How long we'll wait before playback begins, so the user has time to switch
         # back over to FFXIV:
         delay_time = int(self.delay_spinner.get())
