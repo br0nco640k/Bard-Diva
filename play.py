@@ -15,7 +15,7 @@ import time as Time
 
 ################################################################################
 # New GUI and features by br0nco640k
-# Thanks to angrymarker, realAbitbol and sirkhancision for their commits!
+# Thanks to angrymarker, realAbitbol and Jorge Santiago for their commits!
 ################################################################################
 
 # Some globals for adding a looping option to the GUI later on:
@@ -473,12 +473,12 @@ class Main_Window(Tk):
                                      width=25)
         self.hold_long_notes.pack(pady=10)
         self.tone_switching = Checkbutton(self,
-                                     text="Tone switching (gtr)",
+                                     text="Tone switching (guitar)",
                                      variable=self.ToneSwitch,
                                      onvalue=1,
                                      offvalue=0,
                                      height=1,
-                                     width=18)
+                                     width=20)
         self.tone_switching.pack(pady=10)
         self.tone_switching.select()
         self.play_all = Checkbutton(self,
@@ -515,6 +515,7 @@ class Main_Window(Tk):
 
     def file(self):
         global track_name
+        TracksDetected = {}
         self.file_to_play = filedialog.askopenfilename(initialdir="",
                                                        title="Select MIDI file",
                                                        filetypes=[("MIDI files", "*.mid")])
@@ -532,10 +533,16 @@ class Main_Window(Tk):
             self.channel_list.config(state='normal')
             self.channel_list.delete("1.0", END)
             for msg in midi_file:
+                if msg.type == "note_on":
+                    TracksDetected[int(msg.channel)] = True
+                # Here is where I'll add better channel detection, since not all MIDI files properly use
+                # a program_change for each channel to identify the intended instrument for that channel:
                 if msg.type == 'program_change': # Every program change sets a channel to an instrument type
                     # We can use that channel and program data to determine the type of instrument for that track
                     # and we can populate an options list for them all, by instrument name
                     self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + program_to_instrument_name(msg.program) + "\n")
+            keylist = TracksDetected.keys()
+            self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
             self.channel_list.config(state='disabled')
         
     def play_song(self):
@@ -551,7 +558,7 @@ class Main_Window(Tk):
         # How long we'll wait before playback begins, so the user has time to switch
         # back over to FFXIV:
         delay_time = int(self.delay_spinner.get())
-        self.action_label.config(text="Change to FFXIV window in the next 5 seconds.")
+        self.action_label.config(text="Change to FFXIV window in the next " + self.delay_spinner.get() + " seconds.")
         if self.LongNotes.get() == 1:
             HoldNotes = True
         else:
