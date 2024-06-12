@@ -56,6 +56,8 @@ Ensure keybindings are set as per the following:
 
 - Wayland option (for Linux users that have moved to Wayland that have issues)
 
+- Network synchronization for multi-box performance (using zeroconf, perhaps)
+
 #### Some notes for Windows 10/11 and macOS:
 
 - Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID.
