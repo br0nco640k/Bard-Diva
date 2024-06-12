@@ -15,7 +15,7 @@ import time as Time
 
 ################################################################################
 # New GUI and features by br0nco640k
-# Thanks to angrymarker, realAbitbol and sirkhancision for their commits!
+# Thanks to angrymarker, realAbitbol and Jorge Santiago for their commits!
 ################################################################################
 
 # Some globals for adding a looping option to the GUI later on:
