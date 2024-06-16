@@ -33,7 +33,7 @@ GuitarToneSwitch = False
 ChannelToPlay = 0
 # Window geometry:
 width = 900
-height = 1200
+height = 1300
 track_name=""
 
 
@@ -494,6 +494,11 @@ class Main_Window(Tk):
         self.channel_label.pack()
         self.channel_to_play = Spinbox(self, from_=0, to=15)
         self.channel_to_play.pack(pady=10)
+        self.octave_label = Label(self, text = 'Octave target:')
+        self.octave_label.pack(pady=10)
+        octave_range = StringVar(self)
+        self.octave_spinner = Spinbox(self, from_=-1, to=1, textvariable=octave_range)
+        self.octave_spinner.pack(pady=10)
         self.delay_label = Label(self, text="Time to delay playback:")
         self.delay_label.pack(pady=10)
         playback_delay = StringVar(self)
