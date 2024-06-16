@@ -497,8 +497,9 @@ class Main_Window(Tk):
         self.octave_label = Label(self, text = 'Octave target:')
         self.octave_label.pack(pady=10)
         octave_range = StringVar(self)
-        self.octave_spinner = Spinbox(self, from_=-1, to=1, textvariable=octave_range)
+        self.octave_spinner = Spinbox(self, from_=-3, to=3, textvariable=octave_range)
         self.octave_spinner.pack(pady=10)
+        octave_range.set('0')
         self.delay_label = Label(self, text="Time to delay playback:")
         self.delay_label.pack(pady=10)
         playback_delay = StringVar(self)
@@ -542,7 +543,7 @@ class Main_Window(Tk):
             for msg in midi_file:
                 if msg.type == "note_on":
                     # If we have a note_on, then the channel it occurs on is used:
-                    TracksDetected[int(msg.channel)] = True
+                    TracksDetected[int(msg.channel)] = True                        
                     freq_total += note_to_frequency(msg.note)
                     note_count += 1
                 # a program_change for each channel to identify the intended instrument for that channel:
@@ -553,6 +554,22 @@ class Main_Window(Tk):
             keylist = TracksDetected.keys()
             self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
             avg_note = round(freq_total/note_count)
+            if (avg_note <= 62):
+                self.channel_list.insert(END, "Recommended octave: -3\n")
+            elif (avg_note <= 124):
+                self.channel_list.insert(END, "Recommended octave: -2\n")
+            elif (avg_note <= 247):
+                self.channel_list.insert(END, "Recommended octave: -1\n")
+            elif (avg_note <= 494):
+                self.channel_list.insert(END, "Recommended octave: 0\n")
+            elif (avg_note <= 988):
+                self.channel_list.insert(END, "Recommended octave: +1\n")
+            elif (avg_note <= 1976):
+                self.channel_list.insert(END, "Recommended octave: +2\n")
+            elif (avg_note <= 3951):
+                self.channel_list.insert(END, "Recommended octave: +3\n")
+            else:
+                self.channel_list.insert(END, "Recommended octave: +3\n")
             self.channel_list.insert(END, "Average note frequency: " + str(avg_note) + "\n")
             self.channel_list.config(state='disabled')
         
