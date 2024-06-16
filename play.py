@@ -537,10 +537,14 @@ class Main_Window(Tk):
             print(midi_file.length)
             self.channel_list.config(state='normal')
             self.channel_list.delete("1.0", END)
+            freq_total = 0
+            note_count = 0
             for msg in midi_file:
                 if msg.type == "note_on":
+                    # If we have a note_on, then the channel it occurs on is used:
                     TracksDetected[int(msg.channel)] = True
-                # Here is where I'll add better channel detection, since not all MIDI files properly use
+                    freq_total += note_to_frequency(msg.note)
+                    note_count += 1
                 # a program_change for each channel to identify the intended instrument for that channel:
                 if msg.type == 'program_change': # Every program change sets a channel to an instrument type
                     # We can use that channel and program data to determine the type of instrument for that track
@@ -548,6 +552,8 @@ class Main_Window(Tk):
                     self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + program_to_instrument_name(msg.program) + "\n")
             keylist = TracksDetected.keys()
             self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
+            avg_note = round(freq_total/note_count)
+            self.channel_list.insert(END, "Average note frequency: " + str(avg_note) + "\n")
             self.channel_list.config(state='disabled')
         
     def play_song(self):
