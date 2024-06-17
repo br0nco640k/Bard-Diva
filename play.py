@@ -31,6 +31,7 @@ delay_time = 5
 AllTracks = False
 GuitarToneSwitch = False
 ChannelToPlay = 0
+OctaveTarget = 0
 # Window geometry:
 width = 900
 height = 1300
@@ -47,7 +48,120 @@ def frequency_to_key(frequency):
     """
     Convert a frequency (given in Hz) into a key press:
     """
-    notes = {
+    # Different sets for different octave targets:
+    notes_minus1 = { # I'll need to check these during debugging:
+        7902: "7",
+        7459: "j",
+        7040: "6",
+        6645: "h",
+        6272: "5",
+        5920: "g",
+        5588: "4",
+        5274: "3",
+        4978: "f",
+        4699: "2",
+        4435: "d",
+        4186: "1",
+        3951: "7",
+        3729: "j",
+        3520: "6",
+        3322: "h",
+        3136: "5",
+        2960: "g",
+        2794: "4",
+        2637: "3",
+        2489: "f",
+        2349: "2",
+        2217: "d",
+        2093: "1",
+        1976: "7",
+        1865: "j", # may sometimes hit as 1864! Apparently round() is buggy
+        1864: "j",
+        1760: "6",
+        1661: "h",
+        1568: "5",
+        1480: "g",
+        1397: "4",
+        1319: "3",
+        1245: "f",
+        1175: "2",
+        1109: "d",
+        1047: "1",
+        988: "7",
+        932: "j",
+        880: "6",
+        831: "h",
+        784: "5",
+        740: "g",
+        698: "4",
+        659: "3",
+        622: "f",
+        587: "2",
+        554: "d",
+        523: "1",
+        494: "7",
+        466: "j",
+        440: "6",
+        415: "h",
+        392: "5",
+        370: "g",
+        350: "4",
+        330: "3",
+        311: "f",
+        294: "2",
+        277: "d",
+        262: "1",
+        247: "t",
+        233: "c",
+        220: "r",
+        208: "x",
+        196: "e",
+        185: "z",
+        175: "w",
+        165: "q",
+        156: "l",
+        147: "0",
+        139: "k",
+        131: "9",
+        123: "s",
+        117: ",",
+        110: "a",
+        104: "m",
+        98:  "p",
+        93:  "n",
+        87:  "o",
+        82:  "i",
+        78:  "b",
+        73:  "u",
+        70:  "v",
+        65:  "y",
+        62:  "s",
+        58:  ",",
+        55:  "a",
+        52:  "m",
+        49:  "p",
+        46:  "n",
+        44:  "o",
+        41:  "i",
+        39:  "b",
+        37:  "u",
+        35:  "v",
+        33:  "y",
+        31:  "s",
+        29:  ",",
+        28:  "a",
+        26:  "m",
+        25:  "p",
+        23:  "n",
+        22:  "o",
+        21:  "i",
+        19:  "b",
+        18:  "u",
+        17:  "v",
+        16:  "y",
+    }
+
+    notes_zero = {
         1864: "j",
         1760: "8",
         1568: "5",
@@ -105,7 +219,20 @@ def frequency_to_key(frequency):
         49:  "p",
     }
 
-    return notes.get(frequency,
+    notes_plus1 = {}
+
+    match OctaveTarget:
+        case -1:
+            return notes_minus1.get(frequency,
+                     f"\t\t keystroke NOT FOUND, frequency: {frequency}")
+        case 0:
+            return notes_zero.get(frequency,
+                     f"\t\t keystroke NOT FOUND, frequency: {frequency}")
+        case 1:
+            return notes_plus1.get(frequency,
+                     f"\t\t keystroke NOT FOUND, frequency: {frequency}")
+        case _:
+            return notes_zero.get(frequency,
                      f"\t\t keystroke NOT FOUND, frequency: {frequency}")
 
 def program_to_instrument_name(program):
@@ -497,7 +624,7 @@ class Main_Window(Tk):
         self.octave_label = Label(self, text = 'Octave target:')
         self.octave_label.pack(pady=10)
         octave_range = StringVar(self)
-        self.octave_spinner = Spinbox(self, from_=-3, to=3, textvariable=octave_range)
+        self.octave_spinner = Spinbox(self, from_=-1, to=1, textvariable=octave_range)
         self.octave_spinner.pack(pady=10)
         octave_range.set('0')
         self.delay_label = Label(self, text="Time to delay playback:")
@@ -554,22 +681,12 @@ class Main_Window(Tk):
             keylist = TracksDetected.keys()
             self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
             avg_note = round(freq_total/note_count)
-            if (avg_note <= 62):
-                self.channel_list.insert(END, "Recommended octave: -3\n")
-            elif (avg_note <= 124):
-                self.channel_list.insert(END, "Recommended octave: -2\n")
-            elif (avg_note <= 247):
+            if (avg_note <= 247):
                 self.channel_list.insert(END, "Recommended octave: -1\n")
             elif (avg_note <= 494):
                 self.channel_list.insert(END, "Recommended octave: 0\n")
-            elif (avg_note <= 988):
-                self.channel_list.insert(END, "Recommended octave: +1\n")
-            elif (avg_note <= 1976):
-                self.channel_list.insert(END, "Recommended octave: +2\n")
-            elif (avg_note <= 3951):
-                self.channel_list.insert(END, "Recommended octave: +3\n")
             else:
-                self.channel_list.insert(END, "Recommended octave: +3\n")
+                self.channel_list.insert(END, "Recommended octave: +1\n")
             self.channel_list.insert(END, "Average note frequency: " + str(avg_note) + "\n")
             self.channel_list.config(state='disabled')
         
@@ -581,6 +698,7 @@ class Main_Window(Tk):
         global delay_time
         global GuitarToneSwitch
         global HoldNotes
+        global OctaveTarget
         self.progress_bar['value'] = 0.0
         self.update()
         # How long we'll wait before playback begins, so the user has time to switch
@@ -608,6 +726,7 @@ class Main_Window(Tk):
             GuitarToneSwitch = True
         else:
             GuitarToneSwitch = False
+        OctaveTarget = int(self.octave_spinner.get())
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
