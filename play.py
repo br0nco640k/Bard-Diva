@@ -15,7 +15,7 @@ import time as Time
 
 ################################################################################
 # New GUI and features by br0nco640k
-# Thanks to angrymarker, realAbitbol and Jorge Santiago for their commits!
+# Thanks to angrymarker, realAbitbol and sirkhancision for their commits!
 ################################################################################
 
 # Some globals for adding a looping option to the GUI later on:
@@ -31,9 +31,10 @@ delay_time = 5
 AllTracks = False
 GuitarToneSwitch = False
 ChannelToPlay = 0
+OctaveTarget = 0
 # Window geometry:
 width = 900
-height = 1200
+height = 1300
 track_name=""
 
 
@@ -47,7 +48,120 @@ def frequency_to_key(frequency):
     """
     Convert a frequency (given in Hz) into a key press:
     """
-    notes = {
+    # Different sets for different octave targets:
+    notes_minus1 = { # I'll need to check these during debugging:
+        7902: "7",
+        7459: "j",
+        7040: "6",
+        6645: "h",
+        6272: "5",
+        5920: "g",
+        5588: "4",
+        5274: "3",
+        4978: "f",
+        4699: "2",
+        4435: "d",
+        4186: "1",
+        3951: "7",
+        3729: "j",
+        3520: "6",
+        3322: "h",
+        3136: "5",
+        2960: "g",
+        2794: "4",
+        2637: "3",
+        2489: "f",
+        2349: "2",
+        2217: "d",
+        2093: "1",
+        1976: "7",
+        1865: "j", # may sometimes hit as 1864! Apparently round() is buggy
+        1864: "j",
+        1760: "6",
+        1661: "h",
+        1568: "5",
+        1480: "g",
+        1397: "4",
+        1319: "3",
+        1245: "f",
+        1175: "2",
+        1109: "d",
+        1047: "1",
+        988: "7",
+        932: "j",
+        880: "6",
+        831: "h",
+        784: "5",
+        740: "g",
+        698: "4",
+        659: "3",
+        622: "f",
+        587: "2",
+        554: "d",
+        523: "1",
+        494: "7",
+        466: "j",
+        440: "6",
+        415: "h",
+        392: "5",
+        370: "g",
+        350: "4",
+        330: "3",
+        311: "f",
+        294: "2",
+        277: "d",
+        262: "1",
+        247: "t",
+        233: "c",
+        220: "r",
+        208: "x",
+        196: "e",
+        185: "z",
+        175: "w",
+        165: "q",
+        156: "l",
+        147: "0",
+        139: "k",
+        131: "9",
+        123: "s",
+        117: ",",
+        110: "a",
+        104: "m",
+        98:  "p",
+        93:  "n",
+        87:  "o",
+        82:  "i",
+        78:  "b",
+        73:  "u",
+        70:  "v",
+        65:  "y",
+        62:  "s",
+        58:  ",",
+        55:  "a",
+        52:  "m",
+        49:  "p",
+        46:  "n",
+        44:  "o",
+        41:  "i",
+        39:  "b",
+        37:  "u",
+        35:  "v",
+        33:  "y",
+        31:  "s",
+        29:  ",",
+        28:  "a",
+        26:  "m",
+        25:  "p",
+        23:  "n",
+        22:  "o",
+        21:  "i",
+        19:  "b",
+        18:  "u",
+        17:  "v",
+        16:  "y",
+    }
+
+    notes_zero = {
         1864: "j",
         1760: "8",
         1568: "5",
@@ -105,7 +219,130 @@ def frequency_to_key(frequency):
         49:  "p",
     }
 
-    return notes.get(frequency,
+    notes_plus1 = {
+        7902: "7",
+        7459: "j",
+        7040: "6",
+        6645: "h",
+        6272: "5",
+        5920: "g",
+        5588: "4",
+        5274: "3",
+        4978: "f",
+        4699: "2",
+        4435: "d",
+        4186: "1",
+        3951: "7",
+        3729: "j",
+        3520: "6",
+        3322: "h",
+        3136: "5",
+        2960: "g",
+        2794: "4",
+        2637: "3",
+        2489: "f",
+        2349: "2",
+        2217: "d",
+        2093: "1",
+        1976: "7",
+        1865: "j", # may sometimes hit as 1864! Apparently round() is buggy
+        1864: "j",
+        1760: "6",
+        1661: "h",
+        1568: "5",
+        1480: "g",
+        1397: "4",
+        1319: "3",
+        1245: "f",
+        1175: "2",
+        1109: "d",
+        1047: "1",
+        988: "t",
+        932: "c",
+        880: "r",
+        831: "x",
+        784: "e",
+        740: "z",
+        698: "w",
+        659: "q",
+        622: "l",
+        587: "0",
+        554: "k",
+        523: "9",
+        494: "s",
+        466: ",",
+        440: "a",
+        415: "m",
+        392: "p",
+        370: "n",
+        349: "o",
+        330: "i",
+        311: "b",
+        294: "u",
+        277: "v",
+        262: "y",
+        247: "s",
+        233: ",",
+        220: "a",
+        208: "m",
+        196: "p",
+        185: "n",
+        175: "o",
+        165: "i",
+        156: "b",
+        147: "u",
+        139: "v",
+        131: "y",
+        123: "s",
+        117: ",",
+        110: "a",
+        104: "m",
+        98:  "p",
+        93:  "n",
+        87:  "o",
+        82:  "i",
+        78:  "b",
+        73:  "u",
+        70:  "v",
+        65:  "y",
+        62:  "s",
+        58:  ",",
+        55:  "a",
+        52:  "m",
+        49:  "p",
+        46:  "n",
+        44:  "o",
+        41:  "i",
+        39:  "b",
+        37:  "u",
+        35:  "v",
+        33:  "y",
+        31:  "s",
+        29:  ",",
+        28:  "a",
+        26:  "m",
+        25:  "p",
+        23:  "n",
+        22:  "o",
+        21:  "i",
+        19:  "b",
+        18:  "u",
+        17:  "v",
+        16:  "y",
+    }
+
+    match OctaveTarget:
+        case -1:
+            return notes_minus1.get(frequency,
+                     f"\t\t keystroke NOT FOUND, frequency: {frequency}")
+        case 0:
+            return notes_zero.get(frequency,
+                     f"\t\t keystroke NOT FOUND, frequency: {frequency}")
+        case 1:
+            return notes_plus1.get(frequency,
+                     f"\t\t keystroke NOT FOUND, frequency: {frequency}")
+        case _:
+            return notes_zero.get(frequency,
                      f"\t\t keystroke NOT FOUND, frequency: {frequency}")
 
 def program_to_instrument_name(program):
@@ -189,61 +426,65 @@ def frequency_to_readable_note(frequency):
     Convert a frequency (given in Hz) into a readable note:
     """
     notes = {
-        1864: "B flat +octave",
-        1760: "C+1",
-        1568: "G +octave",
-        1397: "F +octave",
-        1319: "E +octave",
-        1175: "D +octave",
-        1109: "C# +octave",
-        1047: "C+1",
-        988: "B +octave",
-        932: "B flat +octave",
-        880: "A +octave",
-        831: "G# +octave",
-        784: "G +octave",
-        740: "F# +octave",
-        698: "F +octave",
-        659: "E +octave",
-        622: "E flat +octave",
-        587: "D +octave",
-        554: "C# +octave",
-        523: "C +octave",
-        494: "B",
-        466: "B flat",
-        440: "A",
-        415: "G#",
-        392: "G",
-        370: "F#",
-        349: "F",
-        330: "E",
-        311: "E flat",
-        294: "D",
-        277: "C#",
-        262: "C",
-        247: "B -octave",
-        233: "B flat -octave",
-        220: "A -octave",
-        208: "G# -octave",
-        196: "G -octave",
-        185: "F# -octave",
-        175: "F",
-        165: "E",
-        156: "E flat",
-        147: "D",
-        139: "C# -octave",
-        131: "C",
-        123: "B --octave",
-        104: "G# --octave",
-        110: "A --octave",
-        98:  "G --octave",
-        92:  "F# --octave",
-        82:  "E --octave",
-        73:  "D --octave",
-        65:  "C --octave",
-        62:  "B ---octave",
-        55:  "A ---octave",
-        49:  "G ---octave",
+        1864: "B flat Octave 6",
+        1760: "A Octave 6",
+        1568: "G Octave 6",
+        1397: "F Octave 6",
+        1319: "E Octave 6",
+        1175: "D Octave 6",
+        1109: "C# Octave 6",
+        1047: "C Octave 6",
+        988: "B Octave 5",
+        932: "B flat Octave 5",
+        880: "A Octave 5",
+        831: "G# Octave 5",
+        784: "G Octave 5",
+        740: "F# Octave 5",
+        698: "F Octave 5",
+        659: "E Octave 5",
+        622: "E flat Octave 5",
+        587: "D Octave 5",
+        554: "C# Octave 5",
+        523: "C Octave 5",
+        494: "B Octave 4",
+        466: "B flat Octave 4",
+        440: "A Octave 4",
+        415: "G# Octave 4",
+        392: "G Octave 4",
+        370: "F# Octave 4",
+        349: "F Octave 4",
+        330: "E Octave 4",
+        311: "E flat Octave 4",
+        294: "D Octave 4",
+        277: "C# Octave 4",
+        262: "C Octave 4",
+        247: "B Octave 3",
+        233: "B flat Octave 3",
+        220: "A Octave 3",
+        208: "G# Octave 3",
+        196: "G Octave 3",
+        185: "F# Octave 3",
+        175: "F Octave 3",
+        165: "E Octave 3",
+        156: "E flat Octave 3",
+        147: "D Octave 3",
+        139: "C# Octave 3",
+        131: "C Octave 3",
+        123: "B Octave 2",
+        117: "B flat Octave 2",
+        110: "A Octave 2",
+        104: "G# Octave 2",
+        98:  "G Octave 2",
+        92:  "F# Octave 2", # should round to 93 instead, round() bug?
+        87:  "F Octave 2",
+        82:  "E Octave 2",
+        78:  "E flat Octave 2",
+        73:  "D Octave 2",
+        65:  "C Octave 2",
+        62:  "B Octave 1",
+        55:  "A Octave 1",
+        49:  "G Octave 1", # We're missing quite a few here still
+        31:  "B Octave 0",
     }
 
     return notes.get(frequency,
@@ -494,6 +735,12 @@ class Main_Window(Tk):
         self.channel_label.pack()
         self.channel_to_play = Spinbox(self, from_=0, to=15)
         self.channel_to_play.pack(pady=10)
+        self.octave_label = Label(self, text = 'Octave target:')
+        self.octave_label.pack(pady=10)
+        octave_range = StringVar(self)
+        self.octave_spinner = Spinbox(self, from_=-1, to=1, textvariable=octave_range)
+        self.octave_spinner.pack(pady=10)
+        octave_range.set('0')
         self.delay_label = Label(self, text="Time to delay playback:")
         self.delay_label.pack(pady=10)
         playback_delay = StringVar(self)
@@ -532,10 +779,14 @@ class Main_Window(Tk):
             print(midi_file.length)
             self.channel_list.config(state='normal')
             self.channel_list.delete("1.0", END)
+            freq_total = 0
+            note_count = 0
             for msg in midi_file:
                 if msg.type == "note_on":
-                    TracksDetected[int(msg.channel)] = True
-                # Here is where I'll add better channel detection, since not all MIDI files properly use
+                    # If we have a note_on, then the channel it occurs on is used:
+                    TracksDetected[int(msg.channel)] = True                        
+                    freq_total += note_to_frequency(msg.note)
+                    note_count += 1
                 # a program_change for each channel to identify the intended instrument for that channel:
                 if msg.type == 'program_change': # Every program change sets a channel to an instrument type
                     # We can use that channel and program data to determine the type of instrument for that track
@@ -543,6 +794,14 @@ class Main_Window(Tk):
                     self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + program_to_instrument_name(msg.program) + "\n")
             keylist = TracksDetected.keys()
             self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
+            avg_note = round(freq_total/note_count)
+            if (avg_note <= 247):
+                self.channel_list.insert(END, "Recommended octave: -1\n")
+            elif (avg_note <= 494):
+                self.channel_list.insert(END, "Recommended octave: 0\n")
+            else:
+                self.channel_list.insert(END, "Recommended octave: +1\n")
+            self.channel_list.insert(END, "Average note frequency: " + str(avg_note) + "\n")
             self.channel_list.config(state='disabled')
         
     def play_song(self):
@@ -553,6 +812,7 @@ class Main_Window(Tk):
         global delay_time
         global GuitarToneSwitch
         global HoldNotes
+        global OctaveTarget
         self.progress_bar['value'] = 0.0
         self.update()
         # How long we'll wait before playback begins, so the user has time to switch
@@ -580,6 +840,7 @@ class Main_Window(Tk):
             GuitarToneSwitch = True
         else:
             GuitarToneSwitch = False
+        OctaveTarget = int(self.octave_spinner.get())
         start_new_thread(play_midi, (track_name, ))
         self.stop_button.config(state='active')
         self.play_button.config(state='disabled')
