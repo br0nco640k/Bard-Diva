@@ -46,17 +46,19 @@ Ensure keybindings are set as per the following:
 
 - Ability to hold long notes (highly experimental right now)
 
+- Ability to select an octave range target
+
 #### Planned features:
 
 - Ability to pause songs
-
-- Ability to select an octave range target
 
 - Ability to selectively enable or disable any channel
 
 - Wayland option (for Linux users that have moved to Wayland that have issues)
 
 - Network synchronization for multi-box performance (using zeroconf, perhaps)
+
+- Visual song analyzer, to disply distribution of notes across each octave from 0 to 8
 
 #### Some notes for Windows 10/11 and macOS:
 
