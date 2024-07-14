@@ -60,6 +60,8 @@ Ensure keybindings are set as per the following:
 
 - Visual song analyzer, to disply distribution of notes across each octave from 0 to 8
 
+I'll probably work on some of those extra features after I get through the Dawntrail story!
+
 #### Some notes for Windows 10/11 and macOS:
 
 - Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID.
