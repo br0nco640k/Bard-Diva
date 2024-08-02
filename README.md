@@ -48,6 +48,8 @@ Ensure keybindings are set as per the following:
 
 - Ability to select an octave range target
 
+- Song looping
+
 #### Planned features:
 
 - Ability to pause songs
