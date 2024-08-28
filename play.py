@@ -6,12 +6,26 @@ from tkinter import IntVar
 from tkinter import filedialog
 from _thread import start_new_thread
 from tkinter import ttk
-import mido 
-from pyautogui import press
-# Lets us hold notes by doing keyDown and keyUp:
-from pyautogui import keyDown
-from pyautogui import keyUp
+import mido
 import time as Time
+
+import sys
+
+# Global needed for conditionals
+UseWayland = False
+Argument1 = sys.argv[1]
+
+if Argument1 == 'wayland':
+    UseWayland = True
+if (UseWayland):
+    import subprocess
+else:
+    # Conditional imports:
+    from pyautogui import press
+    # Lets us hold notes by doing keyDown and keyUp:
+    from pyautogui import keyDown
+    from pyautogui import keyUp
+
 
 ################################################################################
 # New GUI and features by br0nco640k
