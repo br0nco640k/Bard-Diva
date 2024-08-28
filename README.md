@@ -16,6 +16,22 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 
 `pip install -r requirements.txt`
 
+#### Wayland users:
+
+- You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time.
+
+For Ubuntu/Debian/Mint/Pop!_OS:
+`sudo apt-get install ydotool`
+
+For Fedora/RHEL/Rocky/Alma:
+`sudo dnf install ydotool`
+
+For Arch Linux:
+`sudo pacman -S ydotool`
+
+- You'll need to have the systemd user service running to setup the virtual input device. You can set the service to automatically start up when you login and also start it now with:
+`systemctl --user enable --now ydotool`
+
 #### Before running:
 
 Ensure keybindings are set as per the following:
@@ -27,6 +43,8 @@ Ensure keybindings are set as per the following:
 - Open up Bard Performance Mode in FFXIV with instrument of choice
 
 - Run `python play.py` or `./play.py` and select the files in the GUI
+
+- On Wayland run `python play.py wayland` or `./play.py wayland` instead
 
 - Switch back to FFXIV, and rock out
 
