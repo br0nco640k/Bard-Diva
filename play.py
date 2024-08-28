@@ -13,14 +13,15 @@ import sys
 
 # Global needed for conditionals
 UseWayland = False
-Argument1 = sys.argv[1]
 
-if Argument1 == 'wayland':
-    UseWayland = True
+# Conditional imports:
+if len(sys.argv) > 1:
+    Argument1 = sys.argv[1]
+    if Argument1 == 'wayland':
+        UseWayland = True
 if (UseWayland):
     import subprocess
 else:
-    # Conditional imports:
     from pyautogui import press
     # Lets us hold notes by doing keyDown and keyUp:
     from pyautogui import keyDown
