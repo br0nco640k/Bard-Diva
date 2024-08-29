@@ -8,7 +8,6 @@ from _thread import start_new_thread
 from tkinter import ttk
 import mido
 import time as Time
-
 import sys
 
 # Global needed for conditionals
@@ -33,14 +32,14 @@ else:
 # Thanks to angrymarker, realAbitbol and sirkhancision for their commits!
 ################################################################################
 
-# Some globals for adding a looping option to the GUI later on:
+# Some globals for the looping option:
 LoopSong = False # Set to True for song looping, will add a GUI option later
 SinglePlay = False
 QuitPlay = False
 HoldNotes = False
 HeldKeys = ""
 
-# We'll add gui option to set the delay time for window switching:
+# Gui option to set the delay time for window switching:
 delay_time = 5
 # For future use:
 AllTracks = False
@@ -49,7 +48,7 @@ ChannelToPlay = 0
 OctaveTarget = 0
 # Window geometry:
 width = 900
-height = 1300
+height = 1300 # This will be troublesome for many users, needs to be fixed for 1080P displays
 track_name=""
 
 

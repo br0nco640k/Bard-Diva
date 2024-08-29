@@ -32,6 +32,8 @@ For Arch Linux:
 - You'll need to have the systemd user service running to setup the virtual input device. You can set the service to automatically start up when you login and also start it now with:
 `systemctl --user enable --now ydotool`
 
+(This does not actually work on my system, so I'm looking into how to create the .service file required by systemd)
+
 #### Before running:
 
 Ensure keybindings are set as per the following:
@@ -42,7 +44,7 @@ Ensure keybindings are set as per the following:
 
 - Open up Bard Performance Mode in FFXIV with instrument of choice
 
-- Run `python play.py` or `./play.py` and select the files in the GUI
+- Run `python play.py` or `./play.py` and select the files in the GUI. If you get errors about pyautogui, try using the Wayland instructions instead (above and below), which in theory should work on all Linux systems.
 
 - On Wayland run `python play.py wayland` or `./play.py wayland` instead
 
