@@ -31,6 +31,7 @@ else:
 ################################################################################
 # New GUI and features by br0nco640k
 # Thanks to angrymarker, realAbitbol and sirkhancision for their commits!
+# Also thanks to aaron78's fork for Wayland, which I borrowed from a little
 ################################################################################
 
 # Some globals for the looping option:
@@ -40,7 +41,6 @@ QuitPlay = False
 HoldNotes = False
 HeldKeys = ""
 NoteDelayTime = 512
-
 # Gui option to set the delay time for window switching:
 delay_time = 5
 # For future use:
@@ -54,9 +54,11 @@ height = 1300 # This will be troublesome for many users, needs to be fixed for 1
 track_name=""
 
 def play_note(note_string):
+    global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
     if UseWayland:
         subprocess.run(f'/usr/bin/ydotool type -d {NoteDelayTime} {note_string}', shell=True)
+        # See the README file for instructions on installing and configuring ydotool
     else:
         press(note_string)
 
@@ -65,6 +67,51 @@ def note_to_frequency(note):
     Convert a MIDI note into a frequency (given in Hz):
     """
     return round(440 * 2**((note - 69) / 12))
+
+def key_to_keycode(key):
+    # Used by ydtotool for key down and key up operations
+    # Use a dictionary to return a keycode number:
+    keycode_data = {
+        "1" : 2,
+        "2" : 3,
+        "3" : 4,
+        "4" : 5,
+        "5" : 6,
+        "6" : 7,
+        "7" : 8,
+        "8" : 9,
+        "9" : 10,
+        "0" : 11,
+        "a" : 30,
+        "b" : 48,
+        "c" : 46,
+        "d" : 32,
+        "e" : 18,
+        "f" : 33,
+        "g" : 34,
+        "h" : 35,
+        "i" : 23,
+        "j" : 36,
+        "k" : 37,
+        "l" : 38,
+        "m" : 50,
+        "n" : 49,
+        "o" : 24,
+        "p" : 25,
+        "q" : 16,
+        "r" : 19,
+        "s" : 31,
+        "t" : 20,
+        "u" : 22,
+        "v" : 47,
+        "w" : 17,
+        "x" : 45,
+        "y" : 21,
+        "z" : 44,
+        "," : 51,
+    }
+
+    return keycode_data.get(key, 0) # return 0 if not in dictionary
 
 def frequency_to_key(frequency):
     """
