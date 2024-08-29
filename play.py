@@ -558,35 +558,59 @@ def play_midi(filename):
                     instrument = message.program
                     match int(instrument):
                         case 24:
-                            press("=")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
+                            else:
+                                press("=")
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 25:
-                            press("=")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
+                            else:
+                                press("=")
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 26:
-                            press("=")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
+                            else:
+                                press("=")
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 27:
-                            press("=")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
+                            else:
+                                press("=")
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 28:
-                            press("[")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"[=]"}', shell=True)
+                            else:
+                                press("[")
                             print("Switching to muted guitar mode.")
                             app.action_label.config(text="Switching to muted guitar mode.")
                         case 29:
-                            press("-")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"-"}', shell=True)
+                            else:
+                                press("-")
                             print("Switching to overdriven guitar mode.")
                             app.action_label.config(text="Switching to overdriven guitar mode.")
                         case 30:
-                            press("]")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"]"}', shell=True)
+                            else:
+                                press("]")
                             print("Switching to distortion guitar mode.")
                             app.action_label.config(text="Switching to distortion guitar mode.")
                         case 31:
-                            press(";")
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {";"}', shell=True)
+                            else:
+                                press(";")
                             print("Switching to harmonics guitar mode.")
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
