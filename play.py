@@ -39,6 +39,7 @@ SinglePlay = False
 QuitPlay = False
 HoldNotes = False
 HeldKeys = ""
+NoteDelayTime = 512
 
 # Gui option to set the delay time for window switching:
 delay_time = 5
@@ -52,6 +53,12 @@ width = 900
 height = 1300 # This will be troublesome for many users, needs to be fixed for 1080P displays
 track_name=""
 
+def play_note(note_string):
+    # note_string contains the letter to be typed on the keyboard, as a string
+    if UseWayland:
+        subprocess.run(f'/usr/bin/ydotool type -d {NoteDelayTime} {note_string}', shell=True)
+    else:
+        press(note_string)
 
 def note_to_frequency(note):
     """
@@ -558,59 +565,67 @@ def play_midi(filename):
                     instrument = message.program
                     match int(instrument):
                         case 24:
-                            if UseWayland:
+                            play_note("=")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
                             else:
-                                press("=")
+                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 25:
-                            if UseWayland:
+                            play_note("=")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
                             else:
-                                press("=")
+                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 26:
-                            if UseWayland:
+                            play_note("=")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
                             else:
-                                press("=")
+                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 27:
-                            if UseWayland:
+                            play_note("=")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
                             else:
-                                press("=")
+                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 28:
-                            if UseWayland:
+                            play_note("[")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {"[=]"}', shell=True)
                             else:
-                                press("[")
+                                press("[") """
                             print("Switching to muted guitar mode.")
                             app.action_label.config(text="Switching to muted guitar mode.")
                         case 29:
-                            if UseWayland:
+                            play_note("-")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {"-"}', shell=True)
                             else:
-                                press("-")
+                                press("-") """
                             print("Switching to overdriven guitar mode.")
                             app.action_label.config(text="Switching to overdriven guitar mode.")
                         case 30:
-                            if UseWayland:
+                            play_note("]")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {"]"}', shell=True)
                             else:
-                                press("]")
+                                press("]") """
                             print("Switching to distortion guitar mode.")
                             app.action_label.config(text="Switching to distortion guitar mode.")
                         case 31:
-                            if UseWayland:
+                            play_note(";")
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {";"}', shell=True)
                             else:
-                                press(";")
+                                press(";") """
                             print("Switching to harmonics guitar mode.")
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
@@ -671,20 +686,22 @@ def play_midi(filename):
                         # New single channel option:
                         if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
-                            if UseWayland:
+                            play_note(key_to_play)
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {key_to_play}', shell=True)
                             else:
-                                press(key_to_play)
+                                press(key_to_play) """
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
 
                         # This is the original play option, which is well tested:
                         elif AllTracks == True:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
-                            if UseWayland:
+                            play_note(key_to_play)
+                            """ if UseWayland:
                                 subprocess.run(f'/usr/bin/ydotool type -d 512 {key_to_play}', shell=True)
                             else:
-                                press(key_to_play)
+                                press(key_to_play) """
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         
