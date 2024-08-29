@@ -19,6 +19,7 @@ if len(sys.argv) > 1:
     if Argument1 == 'wayland':
         UseWayland = True
 if (UseWayland):
+    print("Setting Wayland mode.")
     import subprocess
 else:
     from pyautogui import press
@@ -512,9 +513,11 @@ def play_midi(filename):
     global ChannelToPlay
     global HeldKeys
     global HoldNotes
+    global UseWayland
     QuitPlay = False
     print("Looping set to: ", LoopSong)
     print("Playing channel:", ChannelToPlay)
+    print('Wayland mode: ', UseWayland)
     # Import the MIDI file
     midi_file = mido.MidiFile(filename, clip=True)
     if midi_file.type == 3:
@@ -644,14 +647,20 @@ def play_midi(filename):
                         # New single channel option:
                         if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
-                            press(key_to_play)
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {key_to_play}', shell=True)
+                            else:
+                                press(key_to_play)
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
 
                         # This is the original play option, which is well tested:
                         elif AllTracks == True:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
-                            press(key_to_play)
+                            if UseWayland:
+                                subprocess.run(f'/usr/bin/ydotool type -d 512 {key_to_play}', shell=True)
+                            else:
+                                press(key_to_play)
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         
