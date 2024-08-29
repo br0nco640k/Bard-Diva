@@ -32,7 +32,7 @@ For Arch Linux:
 - You'll need to have the systemd user service running to setup the virtual input device. You can set the service to automatically start up when you login and also start it now with:
 `systemctl --user enable --now ydotool`
 
-(This does not actually work on my system, so I'm looking into how to create the .service file required by systemd)
+(This does not actually work on my system, so I'll be writing much better instructions for getting the ydotool service working soon!)
 
 #### Before running:
 
