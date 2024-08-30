@@ -103,9 +103,7 @@ Ensure keybindings are set as per the following:
 
 - Network synchronization for multi-box performance (using zeroconf, perhaps)
 
-- Visual song analyzer, to disply distribution of notes across each octave from 0 to 8
-
-I'll probably work on some of those extra features after I get through the Dawntrail story!
+- Visual song analyzer, to display distribution of notes across each octave from 0 to 8
 
 #### Some notes for Windows 10/11 and macOS:
 
