@@ -50,8 +50,11 @@ ChannelToPlay = 0
 OctaveTarget = 0
 # Window geometry:
 width = 900
-height = 1300 # This will be troublesome for many users, needs to be fixed for 1080P displays
+height = 1070
 track_name=""
+# "Constants" (Python does not have constants, but I'll make them upper case to be obvious)
+DOWN = True
+UP = False
 
 def play_note(note_string):
     global UseWayland
@@ -112,6 +115,22 @@ def key_to_keycode(key):
     }
 
     return keycode_data.get(key, 0) # return 0 if not in dictionary
+
+def key_event(key, down): # string with key to press, bool where true equals key down
+    # Here we'll do key down events for Wayland or all other systems:
+    global UseWayland
+    # note_string contains the letter to be typed on the keyboard, as a string
+    if UseWayland:
+        KeyCodeToPress = key_to_keycode(key)
+        if down:
+            subprocess.run(f'/usr/bin/ydotool key -d {KeyCodeToPress}:1', shell=True)
+        else:
+            subprocess.run(f'/usr/bin/ydotool key -d {KeyCodeToPress}:0', shell=True)
+    else:
+        if down:
+            keyDown(key)
+        else:
+            keyUp(key)
 
 def frequency_to_key(frequency):
     """
@@ -568,6 +587,8 @@ def play_midi(filename):
     global HeldKeys
     global HoldNotes
     global UseWayland
+    global UP
+    global DOWN
     QuitPlay = False
     print("Looping set to: ", LoopSong)
     print("Playing channel:", ChannelToPlay)
@@ -685,7 +706,8 @@ def play_midi(filename):
                             # Here we're releasing all previous keys:
                             while (len(HeldKeys) > 0):
                                 tempkey = HeldKeys[0]
-                                keyUp(tempkey)
+                                #keyUp(tempkey)
+                                key_event(tempkey, UP)
                                 HeldKeys = HeldKeys[1:]
                                 #print(len(HeldKeys))
                                 if QuitPlay:
@@ -693,7 +715,8 @@ def play_midi(filename):
                                     SinglePlay = False
                                     LoopSong = False
                                     break
-                            keyDown(key_to_play)
+                            #keyDown(key_to_play)
+                            key_event(key_to_play, DOWN)
                             # Adding the newly held key to our "character array", aka our string:
                             HeldKeys += key_to_play
                             #print(message)
@@ -704,7 +727,8 @@ def play_midi(filename):
                             # Here we're releasing all previous keys:
                             while (len(HeldKeys) > 0):
                                 tempkey = HeldKeys[0]
-                                keyUp(tempkey)
+                                #keyUp(tempkey)
+                                key_event(tempkey, UP)
                                 HeldKeys = HeldKeys[1:]
                                 #print(len(HeldKeys))
                                 if QuitPlay:
@@ -712,7 +736,8 @@ def play_midi(filename):
                                     SinglePlay = False
                                     LoopSong = False
                                     break
-                            keyDown(key_to_play)
+                            #keyDown(key_to_play)
+                            key_event(key_to_play, DOWN)
                             # Adding the newly held key to our "character array", aka our string:
                             HeldKeys += key_to_play
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
@@ -725,7 +750,8 @@ def play_midi(filename):
                     else:
                         # We also need to find it in our held keys array and remove it
                         print("Releasing key")
-                        keyUp(key_to_release)
+                        #keyUp(key_to_release)
+                        key_event(key_to_release, UP)
 
             else:
                 if hasattr(message, "velocity"):
@@ -765,7 +791,8 @@ def play_midi(filename):
             # Here we need to make sure that EVERY remaining held key gets released:
             while (len(HeldKeys) > 0):
                 tempkey = HeldKeys[0]
-                keyUp(tempkey)
+                #keyUp(tempkey)
+                key_event(tempkey, UP)
                 HeldKeys = HeldKeys[1:]
             break
         if (SinglePlay):
@@ -789,9 +816,12 @@ def play_midi(filename):
 
 # Define the window:
 class Main_Window(Tk):
+    # Note: Tkinter works with Wayland, but does not respect "per-display" scaling,
+    # so it strictly uses the scaling of your primary display (for now)
     # main init:
     def __init__(self):
         super().__init__()
+        defaultPadding = 2
         self.LoopBox = IntVar()
         self.ToneSwitch = IntVar()
         self.AllTracks = IntVar()
@@ -800,14 +830,14 @@ class Main_Window(Tk):
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
         self.label_title = Label(self, text = 'Bard Diva: MIDI player for FFXIV bards')
-        self.label_title.pack()
-        self.filename = Text(self, width=50, height=4)
-        self.filename.pack(pady=10)
+        self.label_title.pack(pady=defaultPadding)
+        self.filename = Text(self, width=50, height=3)
+        self.filename.pack(pady=defaultPadding)
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
-        self.file_button.pack(pady=10)
+        self.file_button.pack(pady=defaultPadding)
         self.action_label = Label(self, text="Not playing.", height=1)
-        self.action_label.pack(pady=10)
+        self.action_label.pack(pady=defaultPadding)
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
                                      variable=self.LoopBox,
@@ -815,7 +845,7 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=10)
-        self.loop_song.pack(pady=10)
+        self.loop_song.pack(pady=defaultPadding)
         self.hold_long_notes = Checkbutton(self,
                                      text="Hold long notes (experimental)",
                                      variable=self.LongNotes,
@@ -823,7 +853,7 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=25)
-        self.hold_long_notes.pack(pady=10)
+        self.hold_long_notes.pack(pady=defaultPadding)
         self.tone_switching = Checkbutton(self,
                                      text="Tone switching (guitar)",
                                      variable=self.ToneSwitch,
@@ -831,7 +861,7 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=20)
-        self.tone_switching.pack(pady=10)
+        self.tone_switching.pack(pady=defaultPadding)
         self.tone_switching.select()
         self.play_all = Checkbutton(self,
                                      text="Play all channels",
@@ -840,35 +870,35 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=14)
-        self.play_all.pack(pady=10)
+        self.play_all.pack(pady=defaultPadding)
         self.play_all.select()
         self.channel_label = Label(self, text = 'Channel to play:')
-        self.channel_label.pack()
+        self.channel_label.pack(pady=defaultPadding)
         self.channel_to_play = Spinbox(self, from_=0, to=15)
-        self.channel_to_play.pack(pady=10)
+        self.channel_to_play.pack(pady=defaultPadding)
         self.octave_label = Label(self, text = 'Octave target:')
-        self.octave_label.pack(pady=10)
+        self.octave_label.pack(pady=defaultPadding)
         octave_range = StringVar(self)
         self.octave_spinner = Spinbox(self, from_=-1, to=1, textvariable=octave_range)
-        self.octave_spinner.pack(pady=10)
+        self.octave_spinner.pack(pady=defaultPadding)
         octave_range.set('0')
         self.delay_label = Label(self, text="Time to delay playback:")
-        self.delay_label.pack(pady=10)
+        self.delay_label.pack(pady=defaultPadding)
         playback_delay = StringVar(self)
         self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=playback_delay)
-        self.delay_spinner.pack(pady=10)
+        self.delay_spinner.pack(pady=defaultPadding)
         playback_delay.set('5')
         self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
-        self.play_button.pack(pady=10)
+        self.play_button.pack(pady=defaultPadding)
         self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
-        self.stop_button.pack()
+        self.stop_button.pack(pady=defaultPadding)
         self.progress_bar = ttk.Progressbar(length=800)
-        self.progress_bar.pack(pady=10)
+        self.progress_bar.pack(pady=defaultPadding)
         # progress_bar.step(float) to set current song progress
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.pack()
-        self.channel_list = Text(self, width=50, height=7)
-        self.channel_list.pack(pady=10)
+        self.channel_list = Text(self, width=50, height=3)
+        self.channel_list.pack(pady=defaultPadding)
         self.channel_list.config(state='disabled')
 
     def file(self):
