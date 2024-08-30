@@ -40,9 +40,9 @@ SinglePlay = False
 QuitPlay = False
 HoldNotes = False
 HeldKeys = ""
-NoteDelayTime = 512
+NoteDelayTime = 512 # Given in miliseconds
 # Gui option to set the delay time for window switching:
-delay_time = 5
+delay_time = 5 # in seconds
 # For future use:
 AllTracks = False
 GuitarToneSwitch = False
@@ -118,16 +118,19 @@ def key_to_keycode(key):
     return keycode_data.get(key, 0) # return 0 if not in dictionary
 
 def key_event(key, down): # string with key to press, bool where true equals key down
-    # Here we'll do key down events for Wayland or all other systems:
+    # Here we'll do key events for Wayland or all other systems:
     global NoteDelayTime
     global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
     if UseWayland:
         KeyCodeToPress = key_to_keycode(key)
-        if down:
-            subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:1', shell=True)
+        if KeyCodeToPress > 0:
+            if down:
+                subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:1', shell=True)
+            else:
+                subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:0', shell=True)
         else:
-            subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:0', shell=True)
+            print("Keycode not found: ", key)
     else:
         if down:
             keyDown(key)
