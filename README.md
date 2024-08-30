@@ -93,13 +93,13 @@ Ensure keybindings are set as per the following:
 
 - Song looping
 
+- Experimental Wayland support!
+
 #### Planned features:
 
 - Ability to pause songs
 
 - Ability to selectively enable or disable any channel
-
-- Wayland option (for Linux users that have moved to Wayland that have issues)
 
 - Network synchronization for multi-box performance (using zeroconf, perhaps)
 
