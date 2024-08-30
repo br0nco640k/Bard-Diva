@@ -57,6 +57,7 @@ DOWN = True
 UP = False
 
 def play_note(note_string):
+    global NoteDelayTime
     global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
     if UseWayland:
@@ -118,14 +119,15 @@ def key_to_keycode(key):
 
 def key_event(key, down): # string with key to press, bool where true equals key down
     # Here we'll do key down events for Wayland or all other systems:
+    global NoteDelayTime
     global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
     if UseWayland:
         KeyCodeToPress = key_to_keycode(key)
         if down:
-            subprocess.run(f'/usr/bin/ydotool key -d {KeyCodeToPress}:1', shell=True)
+            subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:1', shell=True)
         else:
-            subprocess.run(f'/usr/bin/ydotool key -d {KeyCodeToPress}:0', shell=True)
+            subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:0', shell=True)
     else:
         if down:
             keyDown(key)
