@@ -29,10 +29,33 @@ For Fedora/RHEL/Rocky/Alma:
 For Arch Linux:
 `sudo pacman -S ydotool`
 
-- You'll need to have the systemd user service running to setup the virtual input device. You can set the service to automatically start up when you login and also start it now with:
-`systemctl --user enable --now ydotool`
+- You'll need to have the systemd user service running to setup the virtual input device:
+`sudo systemctl enable ydotool`
 
-(This does not actually work on my system, so I'll be writing much better instructions for getting the ydotool service working soon!)
+- Add the following line to your ~/.bashrc file:
+`export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
+
+close any open terminal windows after adding this line, and then re-open before continuing
+
+- Run the following command to get your UID and GID:
+`echo $(id -u):$(id -g)`
+
+- Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
+`--socket-own=UID:GID`
+
+Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+`ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
+
+- Start the service:
+`sudo systemctl start ydotool`
+
+- Optionally check if it started:
+`sudo systemctl status ydotool`
+
+- Check to see if you now own the socket tmp file:
+`ls -l /tmp/.ydotool_socket`
+
+If so, it should be ready to use now!
 
 #### Before running:
 
