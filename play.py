@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+################################################################################
 # imports:
+################################################################################
 from tkinter import *
 from tkinter import IntVar
 from tkinter import filedialog
@@ -10,7 +12,7 @@ import mido
 import time as Time
 import sys
 
-# Global needed for conditionals
+# Global needed for conditional imports:
 UseWayland = False
 
 # Conditional imports:
@@ -22,6 +24,7 @@ if (UseWayland):
     print("Setting Wayland mode.")
     import subprocess
 else:
+    # Everything that isn't Wayland uses these (but we can't ever load them on Wayland):
     from pyautogui import press
     # Lets us hold notes by doing keyDown and keyUp:
     from pyautogui import keyDown
@@ -43,7 +46,6 @@ HeldKeys = ""
 NoteDelayTime = 512 # Given in miliseconds
 # Gui option to set the delay time for window switching:
 delay_time = 5 # in seconds
-# For future use:
 AllTracks = False
 GuitarToneSwitch = False
 ChannelToPlay = 0
@@ -67,9 +69,7 @@ def play_note(note_string):
         press(note_string)
 
 def note_to_frequency(note):
-    """
-    Convert a MIDI note into a frequency (given in Hz):
-    """
+    # Convert a MIDI note into a frequency (given in Hz):
     return round(440 * 2**((note - 69) / 12))
 
 def key_to_keycode(key):
@@ -138,10 +138,8 @@ def key_event(key, down): # string with key to press, bool where true equals key
             keyUp(key)
 
 def frequency_to_key(frequency):
-    """
-    Convert a frequency (given in Hz) into a key press:
-    """
-    # Different sets for different octave targets:
+    # Convert a frequency (given in Hz) into a key press:
+    # Different dictionaries for different octave targets:
     notes_minus1 = { # I'll need to check these during debugging:
         7902: "7",
         7459: "j",
@@ -515,9 +513,7 @@ def program_to_instrument_name(program):
                      f"\t\t NOT FOUND: {program}")
 
 def frequency_to_readable_note(frequency):
-    """
-    Convert a frequency (given in Hz) into a readable note:
-    """
+    # Convert a frequency (given in Hz) into a readable note:
     notes = {
         1864: "B flat Octave 6",
         1760: "A Octave 6",
@@ -614,9 +610,6 @@ def play_midi(filename):
         app.action_label.config(text="Playing in " + str(delay_time - x))
         Time.sleep(1)
 
-    # Some additional notes for future functionality:
-    # midi_file.length will return the total playback time in seconds
-
     # Play the MIDI file:
     start_time = Time.time()
     while (LoopSong) or (SinglePlay):
@@ -639,66 +632,34 @@ def play_midi(filename):
                     match int(instrument):
                         case 24:
                             play_note("=")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
-                            else:
-                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 25:
                             play_note("=")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
-                            else:
-                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 26:
                             play_note("=")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
-                            else:
-                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 27:
                             play_note("=")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"="}', shell=True)
-                            else:
-                                press("=") """
                             print("Switching to clean guitar mode.")
                             app.action_label.config(text="Switching to clean guitar mode.")
                         case 28:
                             play_note("[")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"[=]"}', shell=True)
-                            else:
-                                press("[") """
                             print("Switching to muted guitar mode.")
                             app.action_label.config(text="Switching to muted guitar mode.")
                         case 29:
                             play_note("-")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"-"}', shell=True)
-                            else:
-                                press("-") """
                             print("Switching to overdriven guitar mode.")
                             app.action_label.config(text="Switching to overdriven guitar mode.")
                         case 30:
                             play_note("]")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {"]"}', shell=True)
-                            else:
-                                press("]") """
                             print("Switching to distortion guitar mode.")
                             app.action_label.config(text="Switching to distortion guitar mode.")
                         case 31:
                             play_note(";")
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {";"}', shell=True)
-                            else:
-                                press(";") """
                             print("Switching to harmonics guitar mode.")
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
@@ -711,20 +672,15 @@ def play_midi(filename):
                             # Here we're releasing all previous keys:
                             while (len(HeldKeys) > 0):
                                 tempkey = HeldKeys[0]
-                                #keyUp(tempkey)
                                 key_event(tempkey, UP)
                                 HeldKeys = HeldKeys[1:]
-                                #print(len(HeldKeys))
                                 if QuitPlay:
-                                    #print("Ending song.")
                                     SinglePlay = False
                                     LoopSong = False
                                     break
-                            #keyDown(key_to_play)
                             key_event(key_to_play, DOWN)
                             # Adding the newly held key to our "character array", aka our string:
                             HeldKeys += key_to_play
-                            #print(message)
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                     elif AllTracks == True:
@@ -732,21 +688,16 @@ def play_midi(filename):
                             # Here we're releasing all previous keys:
                             while (len(HeldKeys) > 0):
                                 tempkey = HeldKeys[0]
-                                #keyUp(tempkey)
                                 key_event(tempkey, UP)
                                 HeldKeys = HeldKeys[1:]
-                                #print(len(HeldKeys))
                                 if QuitPlay:
-                                    #print("Ending song.")
                                     SinglePlay = False
                                     LoopSong = False
                                     break
-                            #keyDown(key_to_play)
                             key_event(key_to_play, DOWN)
                             # Adding the newly held key to our "character array", aka our string:
                             HeldKeys += key_to_play
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                            #print(message)
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                 if message.type == 'note_off':
                     key_to_release = frequency_to_key(note_to_frequency(message.note))
@@ -755,7 +706,6 @@ def play_midi(filename):
                     else:
                         # We also need to find it in our held keys array and remove it
                         print("Releasing key")
-                        #keyUp(key_to_release)
                         key_event(key_to_release, UP)
 
             else:
@@ -765,10 +715,6 @@ def play_midi(filename):
                         if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
                             play_note(key_to_play)
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {key_to_play}', shell=True)
-                            else:
-                                press(key_to_play) """
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
 
@@ -776,10 +722,6 @@ def play_midi(filename):
                         elif AllTracks == True:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
                             play_note(key_to_play)
-                            """ if UseWayland:
-                                subprocess.run(f'/usr/bin/ydotool type -d 512 {key_to_play}', shell=True)
-                            else:
-                                press(key_to_play) """
                             print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                             app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
                         
@@ -796,7 +738,6 @@ def play_midi(filename):
             # Here we need to make sure that EVERY remaining held key gets released:
             while (len(HeldKeys) > 0):
                 tempkey = HeldKeys[0]
-                #keyUp(tempkey)
                 key_event(tempkey, UP)
                 HeldKeys = HeldKeys[1:]
             break
@@ -814,7 +755,6 @@ def play_midi(filename):
     app.action_label.config(text="Ending song.")
     app.play_button.config(state='active')
     app.stop_button.config(state='disabled')
-    #app.progress_bar.step(0.0)
     QuitPlay = False
 
 # The NEW GUI stuff begins here:
