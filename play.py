@@ -798,7 +798,7 @@ class Main_Window(Tk):
                                      onvalue=1,
                                      offvalue=0,
                                      height=1,
-                                     width=25)
+                                     width=26)
         self.hold_long_notes.pack(pady=defaultPadding)
         self.tone_switching = Checkbutton(self,
                                      text="Tone switching (guitar)",
