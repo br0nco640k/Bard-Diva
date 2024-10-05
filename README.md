@@ -13,6 +13,7 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 | `winget search Python.Python`     | `brew install python`  |
 | `then:`                           | `(requires homebrew)`  |
 | `winget install Python.Python.x`  |
+| `Must be version 3.10+`           |
 
 `pip install -r requirements.txt`
 
@@ -107,6 +108,6 @@ Ensure keybindings are set as per the following:
 
 #### Some notes for Windows 10/11 and macOS:
 
-- Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID.
+- Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID. This program requires Python 3.10 or newer (3.12 is the latest right now).
 
 - macOS command line example above requires Homebrew
