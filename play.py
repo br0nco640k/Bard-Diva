@@ -51,8 +51,8 @@ GuitarToneSwitch = False
 ChannelToPlay = 0
 OctaveTarget = 0
 # Window geometry:
-width = 900
-height = 1070
+width = 1000
+height = 700
 track_name=""
 # "Constants" (Python does not have constants, but I'll make them upper case to be obvious)
 DOWN = True
@@ -776,14 +776,18 @@ class Main_Window(Tk):
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
         self.label_title = Label(self, text = 'Bard Diva: MIDI player for FFXIV bards')
-        self.label_title.pack(pady=defaultPadding)
+        self.label_title.grid(row=0, column=0, columnspan=4)
+        #self.label_title.pack(pady=defaultPadding)
         self.filename = Text(self, width=50, height=3)
-        self.filename.pack(pady=defaultPadding)
+        self.filename.grid(row=1,column=0,columnspan=3, pady=2, padx=10, sticky=E)
+        #self.filename.pack(pady=defaultPadding)
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
-        self.file_button.pack(pady=defaultPadding)
+        self.file_button.grid(row=1,column=3)
+        #self.file_button.pack(pady=defaultPadding)
         self.action_label = Label(self, text="Not playing.", height=1)
-        self.action_label.pack(pady=defaultPadding)
+        self.action_label.grid(row=2, column=0, columnspan=4)
+        #self.action_label.pack(pady=defaultPadding)
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
                                      variable=self.LoopBox,
@@ -791,7 +795,8 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=10)
-        self.loop_song.pack(pady=defaultPadding)
+        self.loop_song.grid(row=3,column=0,columnspan=2,sticky=W)
+        #self.loop_song.pack(pady=defaultPadding)
         self.hold_long_notes = Checkbutton(self,
                                      text="Hold long notes (experimental)",
                                      variable=self.LongNotes,
@@ -799,7 +804,8 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=26)
-        self.hold_long_notes.pack(pady=defaultPadding)
+        self.hold_long_notes.grid(row=3,column=2,columnspan=2,sticky=W)
+        #self.hold_long_notes.pack(pady=defaultPadding)
         self.tone_switching = Checkbutton(self,
                                      text="Tone switching (guitar)",
                                      variable=self.ToneSwitch,
@@ -807,7 +813,8 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=20)
-        self.tone_switching.pack(pady=defaultPadding)
+        self.tone_switching.grid(row=4,column=0,columnspan=2,sticky=W)
+        #self.tone_switching.pack(pady=defaultPadding)
         self.tone_switching.select()
         self.play_all = Checkbutton(self,
                                      text="Play all channels",
@@ -816,35 +823,46 @@ class Main_Window(Tk):
                                      offvalue=0,
                                      height=1,
                                      width=14)
-        self.play_all.pack(pady=defaultPadding)
+        self.play_all.grid(row=4,column=2,columnspan=2,sticky=W)
+        #self.play_all.pack(pady=defaultPadding)
         self.play_all.select()
         self.channel_label = Label(self, text = 'Channel to play:')
-        self.channel_label.pack(pady=defaultPadding)
+        self.channel_label.grid(row=5,column=0,sticky=E, padx=5)
+        #self.channel_label.pack(pady=defaultPadding)
         self.channel_to_play = Spinbox(self, from_=0, to=15)
-        self.channel_to_play.pack(pady=defaultPadding)
+        self.channel_to_play.grid(row=5,column=1,sticky=W)
+        #self.channel_to_play.pack(pady=defaultPadding)
         self.octave_label = Label(self, text = 'Octave target:')
-        self.octave_label.pack(pady=defaultPadding)
+        self.octave_label.grid(row=5,column=2,sticky=E,padx=5)
+        #self.octave_label.pack(pady=defaultPadding)
         octave_range = StringVar(self)
         self.octave_spinner = Spinbox(self, from_=-1, to=1, textvariable=octave_range)
-        self.octave_spinner.pack(pady=defaultPadding)
+        self.octave_spinner.grid(row=5,column=3,sticky=W)
+        #self.octave_spinner.pack(pady=defaultPadding)
         octave_range.set('0')
-        self.delay_label = Label(self, text="Time to delay playback:")
-        self.delay_label.pack(pady=defaultPadding)
+        self.delay_label = Label(self, text="Playback delay (sec):")
+        self.delay_label.grid(row=6,column=0,sticky=E, padx=5)
+        #self.delay_label.pack(pady=defaultPadding)
         playback_delay = StringVar(self)
         self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=playback_delay)
-        self.delay_spinner.pack(pady=defaultPadding)
+        self.delay_spinner.grid(row=6,column=1,sticky=W)
+        #self.delay_spinner.pack(pady=defaultPadding)
         playback_delay.set('5')
-        self.play_button = Button(self, text="Play Song", command=self.play_song, state='disabled')
-        self.play_button.pack(pady=defaultPadding)
-        self.stop_button = Button(self, text="Stop Playing", command=self.stop_playing, state='disabled')
-        self.stop_button.pack(pady=defaultPadding)
-        self.progress_bar = ttk.Progressbar(length=800)
-        self.progress_bar.pack(pady=defaultPadding)
+        self.play_button = Button(self, text="Play", command=self.play_song, state='disabled')
+        self.play_button.grid(row=6,column=2,sticky=W)
+        #self.play_button.pack(pady=defaultPadding)
+        self.stop_button = Button(self, text="Stop", command=self.stop_playing, state='disabled')
+        self.stop_button.grid(row=6,column=3,sticky=W)
+        #self.stop_button.pack(pady=defaultPadding)
+        self.progress_bar = ttk.Progressbar(length=950)
+        self.progress_bar.grid(row=7,column=0,columnspan=4, pady=10, padx=5)
+        #self.progress_bar.pack(pady=defaultPadding)
         # progress_bar.step(float) to set current song progress
         self.label_channels = Label(self, text = 'Instrument channels in file:')
-        self.label_channels.pack()
-        self.channel_list = Text(self, width=50, height=3)
-        self.channel_list.pack(pady=defaultPadding)
+        self.label_channels.grid(row=8,columnspan=4)
+        self.channel_list = Text(self, width=65, height=10)
+        self.channel_list.grid(row=9,column=0,columnspan=4)
+        #self.channel_list.pack(pady=defaultPadding)
         self.channel_list.config(state='disabled')
 
     def file(self):
