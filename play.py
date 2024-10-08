@@ -52,7 +52,7 @@ ChannelToPlay = 0
 OctaveTarget = 0
 # Window geometry:
 width = 1000
-height = 700
+height = 750
 track_name=""
 # "Constants" (Python does not have constants, but I'll make them upper case to be obvious)
 DOWN = True
@@ -543,6 +543,7 @@ def key_event(key, down): # string with key to press, bool where true equals key
     global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
     if UseWayland:
+        # See the README file for instructions on installing and configuring ydotool
         KeyCodeToPress = key_to_keycode(key)
         if KeyCodeToPress > 0:
             if down:
@@ -665,7 +666,7 @@ def play_midi(filename):
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
                             pass
-            # This option is very experimental, and will get more work later on:
+            # This option is VERY experimental, and will get more work later on:
             if (HoldNotes):
                 if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
@@ -763,7 +764,7 @@ def play_midi(filename):
 # Define the window:
 class Main_Window(Tk):
     # Note: Tkinter works with Wayland, but does not respect "per-display" scaling,
-    # so it strictly uses the scaling of your primary display (for now)
+    # so it strictly uses the scaling of your primary display (under Gnome, not an issue with KDE)
     # main init:
     def __init__(self):
         super().__init__()
