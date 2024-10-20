@@ -763,7 +763,7 @@ def play_midi(filename):
                             #        SinglePlay = False
                             #        LoopSong = False
                             #        break
-                            if (len(key_to_play < 2)):
+                            if (len(key_to_play) < 2):
                                 key_event(key_to_play, DOWN)
                                 # Adding the newly held key to our "character array", aka our string:
                                 HeldKeys += key_to_play
@@ -782,7 +782,7 @@ def play_midi(filename):
                             #        SinglePlay = False
                             #        LoopSong = False
                             #        break
-                            if (len(key_to_play < 2)):
+                            if (len(key_to_play) < 2):
                                 key_event(key_to_play, DOWN)
                                 # Adding the newly held key to our "character array", aka our string:
                                 HeldKeys += key_to_play
