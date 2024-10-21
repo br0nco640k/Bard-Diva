@@ -51,7 +51,7 @@ GuitarToneSwitch = False
 ChannelToPlay = 0
 OctaveTarget = 0
 # Window geometry:
-width = 1000
+width = 1015
 height = 750
 track_name=""
 # "Constants" (Python does not have constants, but I'll make them upper case to be obvious)
@@ -120,6 +120,7 @@ notes_minus1 = { # I'll need to check these during debugging:
     392: "5",
     370: "g",
     350: "4",
+    349: "4",
     330: "3",
     311: "f",
     294: "2",
@@ -143,6 +144,7 @@ notes_minus1 = { # I'll need to check these during debugging:
     104: "m",
     98:  "p",
     93:  "n",
+    92:  "n",
     87:  "o",
     82:  "i",
     78:  "b",
@@ -221,16 +223,23 @@ notes_zero = {
     139: "v",
     131: "y",
     123: "s",
+    117: ",",
     110: "a",
     104: "m",
     98:  "p",
     92:  "n",
+    87:  "o",
     82:  "i",
+    78:  "b",
     73:  "u",
     65:  "y",
     62:  "s",
+    58:  ",",
     55:  "a",
     49:  "p",
+    46:  "n",
+    44:  "o",
+    41:  "i",
 }
 
 notes_plus1 = {
@@ -313,6 +322,7 @@ notes_plus1 = {
     104: "m",
     98:  "p",
     93:  "n",
+    92:  "n",
     87:  "o",
     82:  "i",
     78:  "b",
@@ -386,6 +396,8 @@ keycode_data = {
     "z" : 44,
     "," : 51,
 }
+
+# Finally added ALL 128 instruments listed in the MIDI standard:
 programs = {
     0: "Grand Piano",
     1: "Bright Piano",
@@ -395,14 +407,25 @@ programs = {
     5: "Electric Piano 2",
     6: "Harpsichord",
     7: "Clavinet",
+    8: "Celesta",
+    9: "Glockenspiel",
+    10: "Music Box",
     11: "Vibraphone",
-    16: "Drawbar Organ",
+    12: "Marimba",
+    13: "Xylophone",
     14: "Tubular Bells",
+    15: "Dulcimer",
+    16: "Drawbar Organ",
+    17: "Percussive Organ",
+    18: "Rock Organ",
     19: "Church Organ",
+    20: "Reed Organ",
+    21: "Accordion",
     22: "Harmonica",
-    24: "Accoustic Guitar",
-    25: "Accoustic Guitar",
-    26: "Electric Guitar",
+    23: "Tango Accordion",
+    24: "Accoustic Nylon Guitar",
+    25: "Accoustic Steel Guitar",
+    26: "Electric Jazz Guitar",
     27: "Electric Guitar (clean)",
     28: "Electric Guitar (muted)",
     29: "Overdriven Guitar",
@@ -419,6 +442,7 @@ programs = {
     40: "Violin",
     41: "Viola",
     42: "Cello",
+    43: "Contrabass",
     44: "Tremolo Strings",
     45: "Pizzicato Strings",
     46: "Orchestral Harp",
@@ -430,11 +454,15 @@ programs = {
     52: "Choir Aahs",
     53: "Voice Oohs",
     54: "Synth Choir",
+    55: "Orchestral Hit",
     56: "Trumpet",
     57: "Trombone",
     58: "Tuba",
+    59: "Muted Trumpet",
     60: "French Horn",
     61: "Brass Section",
+    62: "Synth Brass 1",
+    63: "Synth Brass 2",
     64: "Soprano Sax",
     65: "Alto Sax",
     66: "Tenor Sax",
@@ -447,14 +475,58 @@ programs = {
     73: "Flute",
     74: "Recorder",
     75: "Pan Flute",
-    90: "Pad 3 (polysynth)",
-    93: "Pad 6 (mettalic)",
-    95: "Pad 8 (sweep)",
-    98: "FX 3 (crystal)",
+    76: "Bottle Blow",
+    77: "Shakuhachi",
+    78: "Whistle",
+    79: "Ocarina",
+    80: "Square Wave Lead",
+    81: "Sawtooth Wave Lead",
+    82: "Calliope Lead",
+    83: "Chiff Lead",
+    84: "Charang Lead",
+    85: "Voice Lead",
+    86: "Fifths Lead",
+    87: "Bass Lead",
+    88: "New Age Pad",
+    89: "Warm Pad",
+    90: "Polysynth Pad",
+    91: "Choir Pad",
+    92: "Bowed Pad",
+    93: "Metallic Pad",
+    94: "Halo Pad",
+    95: "Sweep Pad",
+    96: "Rain Effect",
+    97: "Soundtrack Effect",
+    98: "Crystal Effect",
+    99: "Atmosphere Effect",
+    100: "Brightness Effect",
+    101: "Goblins Effect",
+    102: "Echoes Effect",
+    103: "Sci-Fi Effect",
     104: "Sitar",
     105: "Banjo",
+    106: "Shamisen",
+    107: "Koto",
+    108: "Kalimba",
+    109: "Bagpipe",
     110: "Fiddle",
+    111: "Shanai",
+    112: "Tinkle Bell",
+    113: "Agogo",
+    114: "Steel Drums",
+    115: "Woodblock",
+    116: "Taiko Drum",
     117: "Melodic Tom",
+    118: "Synth Drum",
+    119: "Reverse Cymbal",
+    120: "Guitar Fret Noise",
+    121: "Breath Noise",
+    122: "Seashore",
+    123: "Bird Tweet",
+    124: "Telephone Ring",
+    125: "Helicopter",
+    126: "Applause",
+    127: "Gun Shot",
 }
 
 # Convert a frequency (given in Hz) into a readable note:
@@ -515,8 +587,12 @@ readable_notes = {
     73:  "D Octave 2",
     65:  "C Octave 2",
     62:  "B Octave 1",
+    58:  "B flat Octave 1",
     55:  "A Octave 1",
     49:  "G Octave 1", # We're missing quite a few here still
+    46:  "F# Octave 1",
+    44:  "F Octave 1",
+    41:  "E Octave 1",
     31:  "B Octave 0",
 }
 
@@ -524,11 +600,13 @@ def play_note(note_string):
     global NoteDelayTime
     global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
-    if UseWayland:
-        subprocess.run(f'/usr/bin/ydotool type -d {NoteDelayTime} {note_string}', shell=True)
-        # See the README file for instructions on installing and configuring ydotool
-    else:
-        press(note_string)
+    #print(note_string)
+    if (len(note_string) < 2):    
+        if UseWayland:
+            subprocess.run(f'/usr/bin/ydotool type -d {NoteDelayTime} {note_string}', shell=True)
+            # See the README file for instructions on installing and configuring ydotool
+        else:
+            press(note_string)
 
 def note_to_frequency(note):
     # Convert a MIDI note into a frequency (given in Hz):
@@ -542,21 +620,22 @@ def key_event(key, down): # string with key to press, bool where true equals key
     global NoteDelayTime
     global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
-    if UseWayland:
-        # See the README file for instructions on installing and configuring ydotool
-        KeyCodeToPress = key_to_keycode(key)
-        if KeyCodeToPress > 0:
-            if down:
-                subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:1', shell=True)
+    if (len(key) < 2):
+        if UseWayland:
+            # See the README file for instructions on installing and configuring ydotool
+            KeyCodeToPress = key_to_keycode(key)
+            if KeyCodeToPress > 0:
+                if down:
+                    subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:1', shell=True)
+                else:
+                    subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:0', shell=True)
             else:
-                subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:0', shell=True)
+                print("Keycode not found: ", key)
         else:
-            print("Keycode not found: ", key)
-    else:
-        if down:
-            keyDown(key)
-        else:
-            keyUp(key)
+            if down:
+                keyDown(key)
+            else:
+                keyUp(key)
 
 def frequency_to_key(frequency):
     match OctaveTarget:
@@ -589,6 +668,7 @@ def play_midi(filename):
     global ChannelToPlay
     global HeldKeys
     global HoldNotes
+    global GuitarToneSwitch
     global UseWayland
     global UP
     global DOWN
@@ -661,7 +741,10 @@ def play_midi(filename):
                             print("Switching to distortion guitar mode.")
                             app.action_label.config(text="Switching to distortion guitar mode.")
                         case 31:
-                            play_note(";")
+                            if (UseWayland):
+                                play_note("\;")
+                            else:
+                                play_note(";")
                             print("Switching to harmonics guitar mode.")
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
@@ -672,43 +755,50 @@ def play_midi(filename):
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
                             # Here we're releasing all previous keys:
-                            while (len(HeldKeys) > 0):
-                                tempkey = HeldKeys[0]
-                                key_event(tempkey, UP)
-                                HeldKeys = HeldKeys[1:]
-                                if QuitPlay:
-                                    SinglePlay = False
-                                    LoopSong = False
-                                    break
-                            key_event(key_to_play, DOWN)
-                            # Adding the newly held key to our "character array", aka our string:
-                            HeldKeys += key_to_play
-                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            #while (len(HeldKeys) > 0):
+                            #    tempkey = HeldKeys[0]
+                            #    key_event(tempkey, UP)
+                            #    HeldKeys = HeldKeys[1:]
+                            #    if QuitPlay:
+                            #        SinglePlay = False
+                            #        LoopSong = False
+                            #        break
+                            if (len(key_to_play) < 2):
+                                key_event(key_to_play, DOWN)
+                                # Adding the newly held key to our "character array", aka our string:
+                                HeldKeys += key_to_play
+                                print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                                app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            else:
+                                print(key_to_play)
                     elif AllTracks == True:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
                             # Here we're releasing all previous keys:
-                            while (len(HeldKeys) > 0):
-                                tempkey = HeldKeys[0]
-                                key_event(tempkey, UP)
-                                HeldKeys = HeldKeys[1:]
-                                if QuitPlay:
-                                    SinglePlay = False
-                                    LoopSong = False
-                                    break
-                            key_event(key_to_play, DOWN)
-                            # Adding the newly held key to our "character array", aka our string:
-                            HeldKeys += key_to_play
-                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            #while (len(HeldKeys) > 0):
+                            #    tempkey = HeldKeys[0]
+                            #    key_event(tempkey, UP)
+                            #    HeldKeys = HeldKeys[1:]
+                            #    if QuitPlay:
+                            #        SinglePlay = False
+                            #        LoopSong = False
+                            #        break
+                            if (len(key_to_play) < 2):
+                                key_event(key_to_play, DOWN)
+                                # Adding the newly held key to our "character array", aka our string:
+                                HeldKeys += key_to_play
+                                print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                                app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            else:
+                                print(key_to_play)
                 if message.type == 'note_off':
                     key_to_release = frequency_to_key(note_to_frequency(message.note))
                     if len(key_to_release) > 1:
-                        pass
+                        print(key_to_release)
                     else:
                         # We also need to find it in our held keys array and remove it
                         print("Releasing key")
                         key_event(key_to_release, UP)
+                        HeldKeys = HeldKeys.replace(key_to_release, "")
 
             else:
                 if hasattr(message, "velocity"):
@@ -716,17 +806,21 @@ def play_midi(filename):
                         # New single channel option:
                         if AllTracks == False and int(message.channel) == ChannelToPlay:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
-                            play_note(key_to_play)
-                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-
+                            if (len(key_to_play) < 2):
+                                play_note(key_to_play)
+                                print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                                app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            else:
+                                print(key_to_play)
                         # This is the original play option, which is well tested:
                         elif AllTracks == True:
                             key_to_play = frequency_to_key(note_to_frequency(message.note))
-                            play_note(key_to_play)
-                            print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                            app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
-                        
+                            if (len(key_to_play) < 2):
+                                play_note(key_to_play)
+                                print("Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                                app.action_label.config(text="Ch: " + str(message.channel) + " Note: " + frequency_to_readable_note(note_to_frequency(message.note)))
+                            else:
+                                print(key_to_play)
             if QuitPlay:
                 SinglePlay = False
                 LoopSong = False
