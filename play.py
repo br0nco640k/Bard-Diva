@@ -626,9 +626,9 @@ def key_event(key, down): # string with key to press, bool where true equals key
             KeyCodeToPress = key_to_keycode(key)
             if KeyCodeToPress > 0:
                 if down:
-                    subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:1', shell=True)
+                    subprocess.run(f'/usr/bin/ydotool key -d 0 {KeyCodeToPress}:1', shell=True)
                 else:
-                    subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:0', shell=True)
+                    subprocess.run(f'/usr/bin/ydotool key -d 0 {KeyCodeToPress}:0', shell=True)
             else:
                 print("Keycode not found: ", key)
         else:
@@ -764,6 +764,7 @@ def play_midi(filename):
                             #        LoopSong = False
                             #        break
                             if (len(key_to_play) < 2):
+                                key_event(key_to_play, UP) # Can we fix the playback issues if we do an UP before we do a DOWN?
                                 key_event(key_to_play, DOWN)
                                 # Adding the newly held key to our "character array", aka our string:
                                 HeldKeys += key_to_play
