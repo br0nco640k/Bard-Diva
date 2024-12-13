@@ -150,6 +150,7 @@ notes_minus1 = { # I'll need to check these during debugging:
     78:  "b",
     73:  "u",
     70:  "v",
+    69:  "v",
     65:  "y",
     62:  "s",
     58:  ",",
@@ -232,14 +233,17 @@ notes_zero = {
     82:  "i",
     78:  "b",
     73:  "u",
+    69:  "v",
     65:  "y",
     62:  "s",
     58:  ",",
     55:  "a",
+    52:  "m",
     49:  "p",
     46:  "n",
     44:  "o",
     41:  "i",
+    39:  "b",
 }
 
 notes_plus1 = {
@@ -328,6 +332,7 @@ notes_plus1 = {
     78:  "b",
     73:  "u",
     70:  "v",
+    69:  "v",
     65:  "y",
     62:  "s",
     58:  ",",
@@ -585,14 +590,17 @@ readable_notes = {
     82:  "E Octave 2",
     78:  "E flat Octave 2",
     73:  "D Octave 2",
+    69:  "C# Octave 2",
     65:  "C Octave 2",
     62:  "B Octave 1",
     58:  "B flat Octave 1",
     55:  "A Octave 1",
+    52:  "G# Octave 1",
     49:  "G Octave 1", # We're missing quite a few here still
     46:  "F# Octave 1",
     44:  "F Octave 1",
     41:  "E Octave 1",
+    39:  "D# Octave 1",
     31:  "B Octave 0",
 }
 
