@@ -38,7 +38,7 @@ else:
 ################################################################################
 
 # Some globals for the looping option:
-LoopSong = False # Set to True for song looping, will add a GUI option later
+LoopSong = False
 SinglePlay = False
 QuitPlay = False
 HoldNotes = False
@@ -179,9 +179,11 @@ notes_minus1 = { # I'll need to check these during debugging:
 }
 
 notes_zero = {
+    1865: "j", # may sometimes hit as 1864! Apparently round() is buggy
     1864: "j",
     1760: "8",
     1568: "5",
+    1480: "g",
     1397: "4",
     1319: "3",
     1175: "2",
@@ -244,6 +246,7 @@ notes_zero = {
     44:  "o",
     41:  "i",
     39:  "b",
+    35:  "v",
 }
 
 notes_plus1 = {
