@@ -2,6 +2,10 @@
 
 Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux (and other systems that support Python 3 and Tkinter)!
 
+I have rushed back into development on this project after discovering in the last few days that Bard Music Player and LightAmp are no longer working on Windows. This app does
+still work, however, perhaps because it only sends keypress actions to the currently focused window instead of messing about in the memory FFXIV uses. I'm not sure if it was a
+recent Windows Update that broke things for the mainstay Bard apps, but now I'm anxious to make this thing perfect!
+
 #### To install dependencies:
 
 | Debian-based distros         | Fedora                        | Arch Linux     | Void Linux                     |
@@ -82,7 +86,7 @@ Ensure keybindings are set as per the following:
 
 - Lists all channels and instruments assigned, including tone switches (works for MIDI files that have a properly encoded program_change to identify the instrument for each channel, and for files that are encoded for tone switching for Bard Music Player)
 
-- GUI implemented in Tkinter to fix license issues
+- GUI implemented in Tkinter instead of PySimpleGUI to fix license headaches
 
 - Guitar "tone switching" like Bard Music Player
 

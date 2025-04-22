@@ -38,7 +38,7 @@ else:
 ################################################################################
 
 # Some globals for the looping option:
-LoopSong = False # Set to True for song looping, will add a GUI option later
+LoopSong = False
 SinglePlay = False
 QuitPlay = False
 HoldNotes = False
@@ -150,6 +150,7 @@ notes_minus1 = { # I'll need to check these during debugging:
     78:  "b",
     73:  "u",
     70:  "v",
+    69:  "v",
     65:  "y",
     62:  "s",
     58:  ",",
@@ -178,9 +179,11 @@ notes_minus1 = { # I'll need to check these during debugging:
 }
 
 notes_zero = {
+    1865: "j", # may sometimes hit as 1864! Apparently round() is buggy
     1864: "j",
     1760: "8",
     1568: "5",
+    1480: "g",
     1397: "4",
     1319: "3",
     1175: "2",
@@ -232,14 +235,18 @@ notes_zero = {
     82:  "i",
     78:  "b",
     73:  "u",
+    69:  "v",
     65:  "y",
     62:  "s",
     58:  ",",
     55:  "a",
+    52:  "m",
     49:  "p",
     46:  "n",
     44:  "o",
     41:  "i",
+    39:  "b",
+    35:  "v",
 }
 
 notes_plus1 = {
@@ -328,6 +335,7 @@ notes_plus1 = {
     78:  "b",
     73:  "u",
     70:  "v",
+    69:  "v",
     65:  "y",
     62:  "s",
     58:  ",",
@@ -585,14 +593,17 @@ readable_notes = {
     82:  "E Octave 2",
     78:  "E flat Octave 2",
     73:  "D Octave 2",
+    69:  "C# Octave 2",
     65:  "C Octave 2",
     62:  "B Octave 1",
     58:  "B flat Octave 1",
     55:  "A Octave 1",
+    52:  "G# Octave 1",
     49:  "G Octave 1", # We're missing quite a few here still
     46:  "F# Octave 1",
     44:  "F Octave 1",
     41:  "E Octave 1",
+    39:  "D# Octave 1",
     31:  "B Octave 0",
 }
 
@@ -605,6 +616,7 @@ def play_note(note_string):
         if UseWayland:
             subprocess.run(f'/usr/bin/ydotool type -d {NoteDelayTime} {note_string}', shell=True)
             # See the README file for instructions on installing and configuring ydotool
+            # Windows sometimes gives an error about this, which can be safely ignored, even though the Wayland related code is never executed
         else:
             press(note_string)
 
@@ -624,13 +636,13 @@ def key_event(key, down): # string with key to press, bool where true equals key
         if UseWayland:
             # See the README file for instructions on installing and configuring ydotool
             KeyCodeToPress = key_to_keycode(key)
-            if KeyCodeToPress > 0:
+            if KeyCodeToPress > 0: # Zero means the keycode was not found, so do nothing in that case
                 if down:
-                    subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:1', shell=True)
+                    subprocess.run(f'/usr/bin/ydotool key -d 0 {KeyCodeToPress}:1', shell=True)
                 else:
-                    subprocess.run(f'/usr/bin/ydotool key -d {NoteDelayTime} {KeyCodeToPress}:0', shell=True)
+                    subprocess.run(f'/usr/bin/ydotool key -d 0 {KeyCodeToPress}:0', shell=True)
             else:
-                print("Keycode not found: ", key)
+                print("Keycode not found: ", key) # If it's missing from the dictionary, we'll see it and be able to add it in later
         else:
             if down:
                 keyDown(key)
@@ -749,7 +761,8 @@ def play_midi(filename):
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
                             pass
-            # This option is VERY experimental, and will get more work later on:
+            # This option is VERY experimental, and will get more work later on.
+            # Experimental as in "does not work very well at all, and I don't know how to fix it yet".
             if (HoldNotes):
                 if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
@@ -764,6 +777,7 @@ def play_midi(filename):
                             #        LoopSong = False
                             #        break
                             if (len(key_to_play) < 2):
+                                key_event(key_to_play, UP) # Can we fix the playback issues if we do an UP before we do a DOWN?
                                 key_event(key_to_play, DOWN)
                                 # Adding the newly held key to our "character array", aka our string:
                                 HeldKeys += key_to_play
