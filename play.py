@@ -616,6 +616,7 @@ def play_note(note_string):
         if UseWayland:
             subprocess.run(f'/usr/bin/ydotool type -d {NoteDelayTime} {note_string}', shell=True)
             # See the README file for instructions on installing and configuring ydotool
+            # Windows sometimes gives an error about this, which can be safely ignored, even though the Wayland related code is never executed
         else:
             press(note_string)
 
@@ -635,13 +636,13 @@ def key_event(key, down): # string with key to press, bool where true equals key
         if UseWayland:
             # See the README file for instructions on installing and configuring ydotool
             KeyCodeToPress = key_to_keycode(key)
-            if KeyCodeToPress > 0:
+            if KeyCodeToPress > 0: # Zero means the keycode was not found, so do nothing in that case
                 if down:
                     subprocess.run(f'/usr/bin/ydotool key -d 0 {KeyCodeToPress}:1', shell=True)
                 else:
                     subprocess.run(f'/usr/bin/ydotool key -d 0 {KeyCodeToPress}:0', shell=True)
             else:
-                print("Keycode not found: ", key)
+                print("Keycode not found: ", key) # If it's missing from the dictionary, we'll see it and be able to add it in later
         else:
             if down:
                 keyDown(key)
@@ -760,7 +761,8 @@ def play_midi(filename):
                             app.action_label.config(text="Switching to harmonics guitar mode.")
                         case _:
                             pass
-            # This option is VERY experimental, and will get more work later on:
+            # This option is VERY experimental, and will get more work later on.
+            # Experimental as in "does not work very well at all, and I don't know how to fix it yet".
             if (HoldNotes):
                 if message.type == 'note_on':
                     if AllTracks == False and int(message.channel) == ChannelToPlay:
