@@ -20,6 +20,7 @@ recent Windows Update that broke things for the mainstay Bard apps, but now I'm 
 | `Must be version 3.10+`           |
 
 `pip install -r requirements.txt`
+Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install the requirements yet! Still working on it.
 
 #### Wayland users:
 
@@ -27,6 +28,10 @@ recent Windows Update that broke things for the mainstay Bard apps, but now I'm 
 
 For Ubuntu/Debian/Mint/Pop!_OS:
 `sudo apt-get install ydotool`
+The Following is definitely also required on Ubuntu:
+`sudo apt-get install ydotoold`
+From the directory containing Bard Diva (on Ubuntu):
+`sudo cp ydotoold.service /usr/lib/systemd/system/ydotool.service`
 
 For Fedora/RHEL/Rocky/Alma:
 `sudo dnf install ydotool`
@@ -47,6 +52,7 @@ close any open terminal windows after adding this line, and then re-open before 
 
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
+For Ubuntu it will have been in the file you just copied, but you'll want to edit it for your own UID and GID
 
 Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
@@ -59,6 +65,8 @@ Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 10
 
 - Check to see if you now own the socket tmp file:
 `ls -l /tmp/.ydotool_socket`
+On Ubuntu you may have to change the owner of the socket manually after EVERY reboot:
+`sudo chown 1000:1000 /tmp/.ydotool_socket`
 
 If so, it should be ready to use now!
 
