@@ -2,9 +2,8 @@
 
 Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux (and other systems that support Python 3 and Tkinter)!
 
-I have rushed back into development on this project after discovering in the last few days that Bard Music Player and LightAmp are no longer working on Windows. This app does
-still work, however, perhaps because it only sends keypress actions to the currently focused window instead of messing about in the memory FFXIV uses. I'm not sure if it was a
-recent Windows Update that broke things for the mainstay Bard apps, but now I'm anxious to make this thing perfect!
+If you're on Windows, but having trouble getting Bard Music Player to work, there's a fork that skips the update check that does still work. I've been inspired to get this working
+again lately so that I no longer need to depend on Bard Music Player, which does not work under Linux (or Mac) anyway.
 
 #### To install dependencies:
 
@@ -20,7 +19,7 @@ recent Windows Update that broke things for the mainstay Bard apps, but now I'm 
 | `Must be version 3.10+`           |
 
 `pip install -r requirements.txt`
-Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install the requirements yet! Still working on it.
+Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install the requirements yet! I have stopped trying to figure it out, sadly.
 
 #### Wayland users:
 
@@ -28,6 +27,8 @@ Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install t
 
 For Ubuntu/Debian/Mint/Pop!_OS:
 `sudo apt-get install ydotool`
+note:I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have stopped trying.
+
 The Following is definitely also required on Ubuntu:
 `sudo apt-get install ydotoold`
 From the directory containing Bard Diva (on Ubuntu):
@@ -84,7 +85,7 @@ Ensure keybindings are set as per the following:
 
 - On Wayland run `python play.py wayland` or `./play.py wayland` instead
 
-- Switch back to FFXIV, and rock out
+- Switch back to FFXIV, and rock out. The song will start playing after the user selectable delay timer.
 
 #### New features:
 
