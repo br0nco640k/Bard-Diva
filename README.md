@@ -5,52 +5,71 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 If you're on Windows, but having trouble getting Bard Music Player to work, there's a fork that skips the update check that does still work. I've been inspired to get this working
 again lately so that I no longer need to depend on Bard Music Player, which does not work under Linux (or Mac) anyway.
 
-#### To install dependencies:
+### To install dependencies:
 
-| Debian-based distros         | Fedora                        | Arch Linux     | Void Linux                     | Bazzite                              |
-|:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|:------------------------------------:|
-| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` | `rpm-ostree install python3-tkinter` |
+| Debian-based distros         | Fedora                        | Arch Linux     | Void Linux                     |
+|:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|
+| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` |
 
-| Windows 10/11                     | macOS                  |
-|:---------------------------------:|:----------------------:|
-| `winget search Python.Python`     | `brew install python`  |
-| `then:`                           | `(requires homebrew)`  |
-| `winget install Python.Python.x`  |
-| `Must be version 3.10+`           |
+| Bazzite, Kinoite, Silverblue         | Windows 10/11                     | macOS                  |
+|:------------------------------------:|:---------------------------------:|:----------------------:|
+| `rpm-ostree install python3-tkinter` | `winget search Python.Python`     | `brew install python`  |
+|                                      | `then:`                           | `(requires homebrew)`  |
+|                                      | `winget install Python.Python.x`  |                        |
+|                                      | `Must be version 3.10+`           |                        |
 
 `pip install -r requirements.txt`
 
 Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install the requirements yet! I have stopped trying to figure it out, sadly.
 
-#### Wayland users:
+### Wayland users:
 
-- You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time.
+You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time.
+
+#### Bazzite/Kinoite/Silverblue:
 
 Bazzite comes with ydotool preinstalled.
 
-For Ubuntu/Debian/Mint/Pop!_OS:
+- First we'll need to copy the ydotool.service file to another location, where it can be edited:
+`cp /usr/lib/systemd/system/ydotool.service ~/.config/systemd/user/ydotool_home.service`
+
+- Run the following command to get your UID and GID:
+`echo $(id -u):$(id -g)`
+
+- Edit the ~/.config/systemd/user/ydotool_home.service file to add the following to the ExecStart line:
+`--socket-own=UID:GID --socket-path=/home/username/.ydotool_socket`
+
+-Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+`ExecStart=/usr/bin/ydotoold --socket-own=1000:1000 --socket-path=/home/myusername/.ydotool_socket`
+
+(The UID and GID came from the previous command, and replace "username" with your own user name in the path)
+
+- You'll need to have the systemd user service running to setup the virtual input device:
+`systemctl --user enable ydotool_home.service` 
+
+- Add the following line to your ~/.bashrc file:
+`export YDOTOOL_SOCKET="$HOME/.ydotool_socket"`
+
+- close any open terminal windows after adding this line, and then re-open before continuing
+
+- Start the service:
+`systemctl --user start ydotool_home.service`
+
+- Optionally check if it started:
+`systemctl --user status ydotool_home.service`
+
+#### Debian based distros:
+
+- Install ydotool:
 `sudo apt-get install ydotool`
 
 Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have stopped trying.
 
-The Following is definitely also required on Ubuntu:
+- Ubuntu will also need the daemon to be installed seperately:
 `sudo apt-get install ydotoold`
-From the directory containing Bard Diva (on Ubuntu):
+
+- Ubuntu does not create a systemd .service file during installation, so copy the one provided with this project from where you cloned Bard Diva:
 `sudo cp ydotoold.service /usr/lib/systemd/system/ydotool.service`
-
-For Fedora/RHEL/Rocky/Alma:
-`sudo dnf install ydotool`
-
-For Arch Linux:
-`sudo pacman -S ydotool`
-
-- You'll need to have the systemd user service running to setup the virtual input device:
-`sudo systemctl enable ydotool`
-
-- Add the following line to your ~/.bashrc file:
-`export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
-
-close any open terminal windows after adding this line, and then re-open before continuing
 
 - Run the following command to get your UID and GID:
 `echo $(id -u):$(id -g)`
@@ -58,10 +77,18 @@ close any open terminal windows after adding this line, and then re-open before 
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
 
+-Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+`ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
+
 - For Ubuntu it will have been in the file you just copied, but you'll want to edit it for your own UID and GID
 
-Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
-`ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
+- You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
+`sudo systemctl enable ydotool`
+
+- Add the following line to your ~/.bashrc file:
+`export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
+
+- close any open terminal windows after adding this line, and then re-open before continuing
 
 - Start the service:
 `sudo systemctl start ydotool`
@@ -71,18 +98,81 @@ Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 10
 
 - Check to see if you now own the socket tmp file:
 `ls -l /tmp/.ydotool_socket`
-On Ubuntu you may have to change the owner of the socket manually after EVERY reboot:
+
+- If so, it should be ready to use now!
+
+- On Ubuntu you may have to change the owner of the socket manually after EVERY reboot:
 `sudo chown 1000:1000 /tmp/.ydotool_socket`
 
-If so, it should be ready to use now!
+#### Fedora/RHEL/Rocky/Alma:
 
-#### Before running:
+- Install ydotool:
+`sudo dnf install ydotool`
+
+- Run the following command to get your UID and GID:
+`echo $(id -u):$(id -g)`
+
+- Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
+`--socket-own=UID:GID`
+
+-Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+`ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
+
+- You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
+`sudo systemctl enable ydotool`
+
+- Add the following line to your ~/.bashrc file:
+`export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
+
+- close any open terminal windows after adding this line, and then re-open before continuing
+
+- Start the service:
+`sudo systemctl start ydotool`
+
+- Optionally check if it started:
+`sudo systemctl status ydotool`
+
+- Check to see if you now own the socket tmp file:
+`ls -l /tmp/.ydotool_socket`
+
+- If so, it should be ready to use now!
+
+#### Arch based distros:
+
+- Install ydotool:
+`sudo pacman -S ydotool`
+
+- Run the following command to get your UID and GID:
+`echo $(id -u):$(id -g)`
+
+- Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
+`--socket-own=UID:GID`
+
+- You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
+`sudo systemctl enable ydotool`
+
+- Add the following line to your ~/.bashrc file:
+`export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
+
+- close any open terminal windows after adding this line, and then re-open before continuing
+
+- Start the service:
+`sudo systemctl start ydotool`
+
+- Optionally check if it started:
+`sudo systemctl status ydotool`
+
+- Check to see if you now own the socket tmp file:
+`ls -l /tmp/.ydotool_socket`
+
+
+### Before running:
 
 Ensure keybindings are set as per the following:
 ![image info](./perf_settings.png)
 ![image info](./tone_switching.jpg)
 
-#### Running:
+### Running:
 
 - Open up Bard Performance Mode in FFXIV with instrument of choice
 
@@ -92,7 +182,7 @@ Ensure keybindings are set as per the following:
 
 - Switch back to FFXIV, and rock out. The song will start playing after the user selectable delay timer.
 
-#### New features:
+### New features:
 
 - Play all channels or just play a single channel, which is good for songs that work better with one or the other
 
@@ -114,7 +204,7 @@ Ensure keybindings are set as per the following:
 
 - Experimental Wayland support!
 
-#### Planned features:
+### Planned features:
 
 - Ability to pause songs
 
@@ -124,7 +214,7 @@ Ensure keybindings are set as per the following:
 
 - Visual song analyzer, to display distribution of notes across each octave from 0 to 8
 
-#### Some notes for Windows 10/11 and macOS:
+### Some notes for Windows 10/11 and macOS:
 
 - Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID. This program requires Python 3.10 or newer (3.12 is the latest right now).
 
