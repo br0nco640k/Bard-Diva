@@ -202,6 +202,8 @@ sudo chmod +x /etc/sv/ydotoold/run
 sudo ln -sf /etc/sv/ydotoold /var/service/  
 sudo sv up ydotoold  
 
+Modifying the creation of the service script in a fashion similar to other distros, by adding the socket argument, might work similarly to systemd based systems, but I'm 
+unable to test or verify that. It's more of a place to start, since I have never used Void. If anybody has this working on Void, open an issue or message me, and I'll update it.
 
 ### Before running:
 
