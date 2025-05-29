@@ -2,6 +2,9 @@
 
 Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux (and other systems that support Python 3 and Tkinter)!
 
+I have personally tested this on Windows 11, Fedora, !Pop_OS and Bazzite, under both X11 and Wayland. I had no luck with Ubuntu 25.04, thus far, but may try again eventually. I'd 
+be interested in hearing about any issues with other distros in the Issues section of this repository.
+
 If you're on Windows, but having trouble getting Bard Music Player to work, there's a fork that skips the update check that does still work. I've been inspired to get this working
 again lately so that I no longer need to depend on Bard Music Player, which does not work under Linux (or Mac) anyway.
 
@@ -11,12 +14,12 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 |:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|
 | `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` |
 
-| Bazzite, Kinoite, Silverblue         | Windows 10/11                     | macOS                  |
-|:------------------------------------:|:---------------------------------:|:----------------------:|
-| `rpm-ostree install python3-tkinter` | `winget search Python.Python`     | `brew install python`  |
-|                                      | `then:`                           | `(requires homebrew)`  |
-|                                      | `winget install Python.Python.x`  |                        |
-|                                      | `Must be version 3.10+`           |                        |
+| Bazzite, Kinoite, Silverblue            | Windows 10/11                        | macOS                         |
+|:---------------------------------------:|:------------------------------------:|:-----------------------------:|
+| `rpm-ostree install python3-tkinter`    | `winget search Python.Python`        | `brew install python`         |
+|                                         | `then:`                              | `(requires homebrew)`         |
+|                                         | `winget install Python.Python.x`     |                               |
+|                                         | `Must be version 3.10+`              |                               |
 
 `pip install -r requirements.txt`
 
@@ -28,7 +31,7 @@ You must install ydotool to enable keypresses to be sent, as a workaround to Way
 
 #### Bazzite/Kinoite/Silverblue:
 
-Bazzite comes with ydotool preinstalled.
+Bazzite comes with ydotool preinstalled. Not sure about the other two here.
 
 - First we'll need to copy the ydotool.service file to another location, where it can be edited:
 `cp /usr/lib/systemd/system/ydotool.service ~/.config/systemd/user/ydotool_home.service`
