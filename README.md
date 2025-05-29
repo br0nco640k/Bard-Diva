@@ -39,7 +39,7 @@ Bazzite comes with ydotool preinstalled.
 - Edit the ~/.config/systemd/user/ydotool_home.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID --socket-path=/home/username/.ydotool_socket`
 
--Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+- Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000 --socket-path=/home/myusername/.ydotool_socket`
 
 (The UID and GID came from the previous command, and replace "username" with your own user name in the path, as we MUST store the socket in the user's home directory on Bazzite)
@@ -77,7 +77,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
 
--Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+- Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
 
 - For Ubuntu it will have been in the file you just copied, but you'll want to edit it for your own UID and GID
@@ -104,6 +104,8 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - On Ubuntu you may have to change the owner of the socket manually after EVERY reboot:
 `sudo chown 1000:1000 /tmp/.ydotool_socket`
 
+- With Ubuntu 25.04 no part of this process went smoothly, I could not get pip to install the required components, nor did I actually get ydotool working, and the program was not functional.
+
 #### Fedora/RHEL/Rocky/Alma:
 
 - Install ydotool:
@@ -115,7 +117,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
 
--Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+- Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
 
 - You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
@@ -147,6 +149,12 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
+
+- Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
+`--socket-own=UID:GID`
+
+- Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
+`ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
 
 - You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
 `sudo systemctl enable ydotool`
