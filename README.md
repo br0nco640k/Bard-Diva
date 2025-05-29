@@ -1,9 +1,9 @@
-# Bard-Diva
+# Bard Diva
 
 Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux (and other systems that support Python 3 and Tkinter)!
 
 I have personally tested this on Windows 11, Fedora, !Pop_OS and Bazzite, under both X11 and Wayland. I had no luck with Ubuntu 25.04, thus far, but may try again eventually. I'd 
-be interested in hearing about any issues with other distros in the Issues section of this repository.
+be interested in hearing about any issues with other distros in the Issues section of this repository. I believe that it works on Mac, but I'm unable to test it.
 
 If you're on Windows, but having trouble getting Bard Music Player to work, there's a fork that skips the update check that does still work. I've been inspired to get this working
 again lately so that I no longer need to depend on Bard Music Player, which does not work under Linux (or Mac) anyway.
@@ -16,7 +16,7 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 | Bazzite, Kinoite, Silverblue            | Windows 10/11                        | macOS                         |
 |:---------------------------------------:|:------------------------------------:|:-----------------------------:|
-| `rpm-ostree install python3-tkinter`    | `winget search Python.Python`        | `brew install python`         |
+| `rpm-ostree install python3-tkinter`    | `winget search Python.Python`        | `brew install python3-tkinter`|
 |                                         | `then:`                              | `(requires homebrew)`         |
 |                                         | `winget install Python.Python.x`     |                               |
 |                                         | `Must be version 3.10+`              |                               |
@@ -27,7 +27,8 @@ Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install t
 
 ### Wayland users:
 
-You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time.
+You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time. Windows, 
+Mac and X11 users will still be importing and using pyautogui instead, and can skip this section,
 
 #### Bazzite/Kinoite/Silverblue:
 
