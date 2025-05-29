@@ -33,6 +33,8 @@ Bazzite comes with ydotool preinstalled.
 - First we'll need to copy the ydotool.service file to another location, where it can be edited:
 `cp /usr/lib/systemd/system/ydotool.service ~/.config/systemd/user/ydotool_home.service`
 
+- You may have to create the ~/.config/systemd/user/ directory first, if this is your first user service.
+
 - Run the following command to get your UID and GID:
 `echo $(id -u):$(id -g)`
 
