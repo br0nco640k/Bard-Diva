@@ -189,7 +189,7 @@ git clone  https://github.com/ReimuNotMoe/ydotool
 cd ydotool  
 mkdir build && cd build  
 cmake -DSYSTEMD_USER_SERVICE=OFF -DSYSTEMD_SYSTEM_SERVICE=ON ..  
-make -j `nproc`  
+make -j \`nproc\`  
 sudo cp ydotool /usr/local/bin  
 sudo cp ydotoold /usr/local/bin  
 sudo chmod +s $(which ydotool)  
