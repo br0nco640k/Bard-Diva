@@ -42,7 +42,7 @@ Bazzite comes with ydotool preinstalled.
 -Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000 --socket-path=/home/myusername/.ydotool_socket`
 
-(The UID and GID came from the previous command, and replace "username" with your own user name in the path)
+(The UID and GID came from the previous command, and replace "username" with your own user name in the path, as we MUST store the socket in the user's home directory on Bazzite)
 
 - You'll need to have the systemd user service running to setup the virtual input device:
 `systemctl --user enable ydotool_home.service` 
