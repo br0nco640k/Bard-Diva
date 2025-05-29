@@ -537,7 +537,7 @@ programs = {
     127: "Gun Shot",
 }
 
-# Convert a frequency (given in Hz) into a readable note:
+# Convert a frequency (given in Hz) into a human readable note:
 readable_notes = {
     1864: "B flat Octave 6",
     1760: "A Octave 6",
