@@ -185,22 +185,22 @@ I have no experience with Void Linux, and my exeperience with other distros invo
 
 I found this for getting ydotool installed:
 
-git clone  https://github.com/ReimuNotMoe/ydotool
-cd ydotool
-mkdir build && cd build
-cmake -DSYSTEMD_USER_SERVICE=OFF -DSYSTEMD_SYSTEM_SERVICE=ON ..
-make -j `nproc`
-sudo cp ydotool /usr/local/bin
-sudo cp ydotoold /usr/local/bin
-sudo chmod +s $(which ydotool)
-sudo mkdir -p /etc/sv/ydotoold
-sudo cat << EOF | sudo tee /etc/sv/ydotoold/run
-#!/bin/sh
-/usr/local/bin/ydotoold
-EOF
-sudo chmod +x /etc/sv/ydotoold/run
-sudo ln -sf /etc/sv/ydotoold /var/service/
-sudo sv up ydotoold
+git clone  https://github.com/ReimuNotMoe/ydotool  
+cd ydotool  
+mkdir build && cd build  
+cmake -DSYSTEMD_USER_SERVICE=OFF -DSYSTEMD_SYSTEM_SERVICE=ON ..  
+make -j `nproc`  
+sudo cp ydotool /usr/local/bin  
+sudo cp ydotoold /usr/local/bin  
+sudo chmod +s $(which ydotool)  
+sudo mkdir -p /etc/sv/ydotoold  
+sudo cat << EOF | sudo tee /etc/sv/ydotoold/run  
+#!/bin/sh  
+/usr/local/bin/ydotoold  
+EOF  
+sudo chmod +x /etc/sv/ydotoold/run  
+sudo ln -sf /etc/sv/ydotoold /var/service/  
+sudo sv up ydotoold  
 
 
 ### Before running:
