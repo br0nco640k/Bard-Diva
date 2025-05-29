@@ -7,9 +7,9 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 #### To install dependencies:
 
-| Debian-based distros         | Fedora                        | Arch Linux     | Void Linux                     |
-|:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|
-| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` |
+| Debian-based distros         | Fedora                        | Arch Linux     | Void Linux                     | Bazzite                              |
+|:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|:------------------------------------:|
+| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` | `rpm-ostree install python3-tkinter` |
 
 | Windows 10/11                     | macOS                  |
 |:---------------------------------:|:----------------------:|
@@ -19,15 +19,19 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 | `Must be version 3.10+`           |
 
 `pip install -r requirements.txt`
+
 Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install the requirements yet! I have stopped trying to figure it out, sadly.
 
 #### Wayland users:
 
 - You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time.
 
+Bazzite comes with ydotool preinstalled.
+
 For Ubuntu/Debian/Mint/Pop!_OS:
 `sudo apt-get install ydotool`
-note:I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have stopped trying.
+
+Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have stopped trying.
 
 The Following is definitely also required on Ubuntu:
 `sudo apt-get install ydotoold`
@@ -53,7 +57,8 @@ close any open terminal windows after adding this line, and then re-open before 
 
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
-For Ubuntu it will have been in the file you just copied, but you'll want to edit it for your own UID and GID
+
+- For Ubuntu it will have been in the file you just copied, but you'll want to edit it for your own UID and GID
 
 Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
