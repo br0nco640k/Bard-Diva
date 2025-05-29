@@ -84,7 +84,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 
 - For Ubuntu it will have been in the file you just copied, but you'll want to edit it for your own UID and GID
 
-- You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
+- You'll need to have the systemd user service running to setup the virtual input device:
 `sudo systemctl enable ydotool`
 
 - Add the following line to your ~/.bashrc file:
@@ -122,7 +122,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
 
-- You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
+- You'll need to have the systemd user service running to setup the virtual input device:
 `sudo systemctl enable ydotool`
 
 - Add the following line to your ~/.bashrc file:
@@ -158,7 +158,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - Mine looks like `--socket-own=1000:1000` because my UID is 1000 and my GID is 1000:
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
 
-- You'll need to have the systemd user service running to setup the virtual input device. For most distros this command will sufficeL
+- You'll need to have the systemd user service running to setup the virtual input device:
 `sudo systemctl enable ydotool`
 
 - Add the following line to your ~/.bashrc file:
