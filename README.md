@@ -10,10 +10,10 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 ### To install dependencies:
 
-| Debian-based distros         | Fedora                        | Arch Linux                 | Void Linux                     |
-|:----------------------------:|:-----------------------------:|:--------------------------:|:------------------------------:|
-| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk`             | `xbps-install python3-tkinter` |
-|                              |                               | `sudo pacman -S python-pip`|                                |
+| Debian-based distros         | Fedora                        | Arch Linux                   | Void Linux                     |
+|:----------------------------:|:-----------------------------:|:----------------------------:|:------------------------------:|
+| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk`               | `xbps-install python3-tkinter` |
+|                              |                               | `sudo pacman -S python-pipx` |                                |
 
 | Bazzite, Kinoite, Silverblue            | Windows 10/11                       | macOS                          |
 |:---------------------------------------:|:-----------------------------------:|:------------------------------:|
