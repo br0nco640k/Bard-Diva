@@ -10,10 +10,10 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 ### To install dependencies:
 
-| Debian-based distros         | Fedora                        | Arch Linux                   | Void Linux                     |
-|:----------------------------:|:-----------------------------:|:----------------------------:|:------------------------------:|
-| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk`               | `xbps-install python3-tkinter` |
-|                              |                               | `sudo pacman -S python-pipx` |                                |
+| Debian-based distros         | Fedora                        | Arch Linux                  | Void Linux                     |
+|:----------------------------:|:-----------------------------:|:---------------------------:|:------------------------------:|
+| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk`              | `xbps-install python3-tkinter` |
+|                              |                               | `sudo pacman -S python-pip` |                                |
 
 | Bazzite, Kinoite, Silverblue            | Windows 10/11                       | macOS                          |
 |:---------------------------------------:|:-----------------------------------:|:------------------------------:|
@@ -24,8 +24,9 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 `pip install -r requirements.txt`
 
-For systems that give errors about externally managed environments, you can install mido with pipx instead, and then get pyautogui from your existing
-package manager (pipx cannot find it). You may also have to install pipx with your package manager.
+or
+
+`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense.
 
 ### Wayland users:
 

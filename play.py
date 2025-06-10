@@ -51,7 +51,7 @@ GuitarToneSwitch = False
 ChannelToPlay = 0
 OctaveTarget = 0
 # Window geometry:
-width = 1015
+width = 1250
 height = 750
 track_name=""
 # "Constants" (Python does not have constants, but I'll make them upper case to be obvious)
