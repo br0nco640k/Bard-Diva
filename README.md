@@ -24,7 +24,7 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 `pip install -r requirements.txt`
 
-For systems that give errors about externally managed environments, you can install mido with pipx instead, and then get pyautogui from you existing
+For systems that give errors about externally managed environments, you can install mido with pipx instead, and then get pyautogui from your existing
 package manager (pipx cannot find it). You may also have to install pipx with your package manager.
 
 ### Wayland users:
