@@ -26,7 +26,8 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 or
 
-`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense.
+`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense. You may
+also have to add the path for mido to your PATH in .bashrc
 
 ### Wayland users:
 
