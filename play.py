@@ -613,11 +613,10 @@ def play_note(note_string):
     global UseWayland
     # note_string contains the letter to be typed on the keyboard, as a string
     #print(note_string)
-    if (len(note_string) < 2):    
+    if (len(note_string) <= 2):    
         if UseWayland:
             subprocess.run(f'/usr/bin/ydotool type -d {NoteDelayTime} {note_string}', shell=True)
             # See the README file for instructions on installing and configuring ydotool
-            # Windows sometimes gives an error about this, which can be safely ignored, even though the Wayland related code is never executed
         else:
             press(note_string)
 
@@ -707,13 +706,16 @@ def play_midi(filename):
         Time.sleep(1)
 
     # Play the MIDI file:
-    start_time = Time.time()
+    current_time = Time.time()
+    previous_time = current_time
+    elapsed_time = 0.0
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
             while (SongPaused): # This probably won't work, but I'm testing it
                 Time.sleep(1)
+            previous_time = current_time
             current_time = Time.time()
-            elapsed_time = (current_time - start_time)
+            elapsed_time += (current_time - previous_time)
             # Set our new progress_bar widget:
             app.progress_bar['value'] = elapsed_time/float(midi_file.length) * 100
             app.update()
@@ -758,7 +760,7 @@ def play_midi(filename):
                             app.action_label.config(text="Switching to distortion guitar mode.")
                         case 31:
                             if (UseWayland):
-                                play_note("\;")
+                                play_note("\;") # Gives a warning but is required for ydotool to escape the character
                             else:
                                 play_note(";")
                             print("Switching to harmonics guitar mode.")
