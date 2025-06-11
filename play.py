@@ -40,6 +40,7 @@ else:
 # Some globals for the looping option:
 LoopSong = False
 SinglePlay = False
+SongPaused = False
 QuitPlay = False
 HoldNotes = False
 HeldKeys = ""
@@ -50,7 +51,7 @@ AllTracks = False
 GuitarToneSwitch = False
 ChannelToPlay = 0
 OctaveTarget = 0
-# Window geometry:
+# Window geometry (you can tweak this for your system as needed):
 width = 1250
 height = 750
 track_name=""
@@ -678,6 +679,7 @@ def play_midi(filename):
     global QuitPlay
     global AllTracks
     global ChannelToPlay
+    global SongPaused
     global HeldKeys
     global HoldNotes
     global GuitarToneSwitch
@@ -708,6 +710,8 @@ def play_midi(filename):
     start_time = Time.time()
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
+            while (SongPaused): # This probably won't work, but I'm testing it
+                Time.sleep(1)
             current_time = Time.time()
             elapsed_time = (current_time - start_time)
             # Set our new progress_bar widget:
@@ -719,7 +723,7 @@ def play_midi(filename):
             if message.type == 'program_change':
                 print("Program change detected.")
                 # Tone switching:
-                print(GuitarToneSwitch)
+                #print(GuitarToneSwitch)
                 if (GuitarToneSwitch):
                     print(message)
                     instrument = message.program
@@ -871,32 +875,41 @@ def play_midi(filename):
 
 # Define the window:
 class Main_Window(Tk):
-    # Note: Tkinter works with Wayland, but does not respect "per-display" scaling,
-    # so it strictly uses the scaling of your primary display (under Gnome, not an issue with KDE)
+    # Note: Under Wayland with Gnome you may experience scaling issues on some display configurations.
     # main init:
     def __init__(self):
         super().__init__()
-        defaultPadding = 2
+        #defaultPadding = 2
+        # Some local variables:
         self.LoopBox = IntVar()
         self.ToneSwitch = IntVar()
         self.AllTracks = IntVar()
         self.LongNotes = IntVar()
+        # Windows setttings:
         self.title('Bard Diva')
         self.geometry(str(width) + 'x' + str(height))
         # widgets here:
+        ############################
+        # Label row:
+        ############################
         self.label_title = Label(self, text = 'Bard Diva: MIDI player for FFXIV bards')
         self.label_title.grid(row=0, column=0, columnspan=4)
-        #self.label_title.pack(pady=defaultPadding)
+        ############################
+        # File row:
+        ############################
         self.filename = Text(self, width=50, height=3)
         self.filename.grid(row=1,column=0,columnspan=3, pady=2, padx=10, sticky=E)
-        #self.filename.pack(pady=defaultPadding)
         self.filename.config(state='disabled')
         self.file_button = Button(self, text="Open File", command=self.file)
         self.file_button.grid(row=1,column=3)
-        #self.file_button.pack(pady=defaultPadding)
+        ############################
+        # Status row:
+        ############################
         self.action_label = Label(self, text="Not playing.", height=1)
         self.action_label.grid(row=2, column=0, columnspan=4)
-        #self.action_label.pack(pady=defaultPadding)
+        ############################
+        # Option checkboxes:
+        ############################
         self.loop_song = Checkbutton(self,
                                      text="Loop Song",
                                      variable=self.LoopBox,
@@ -905,7 +918,6 @@ class Main_Window(Tk):
                                      height=1,
                                      width=10)
         self.loop_song.grid(row=3,column=0,columnspan=2,sticky=W)
-        #self.loop_song.pack(pady=defaultPadding)
         self.hold_long_notes = Checkbutton(self,
                                      text="Hold long notes (experimental)",
                                      variable=self.LongNotes,
@@ -914,7 +926,6 @@ class Main_Window(Tk):
                                      height=1,
                                      width=26)
         self.hold_long_notes.grid(row=3,column=2,columnspan=2,sticky=W)
-        #self.hold_long_notes.pack(pady=defaultPadding)
         self.tone_switching = Checkbutton(self,
                                      text="Tone switching (guitar)",
                                      variable=self.ToneSwitch,
@@ -923,7 +934,6 @@ class Main_Window(Tk):
                                      height=1,
                                      width=20)
         self.tone_switching.grid(row=4,column=0,columnspan=2,sticky=W)
-        #self.tone_switching.pack(pady=defaultPadding)
         self.tone_switching.select()
         self.play_all = Checkbutton(self,
                                      text="Play all channels",
@@ -933,45 +943,45 @@ class Main_Window(Tk):
                                      height=1,
                                      width=14)
         self.play_all.grid(row=4,column=2,columnspan=2,sticky=W)
-        #self.play_all.pack(pady=defaultPadding)
         self.play_all.select()
+        ############################
+        # Numerical options:
+        ############################
         self.channel_label = Label(self, text = 'Channel to play:')
         self.channel_label.grid(row=5,column=0,sticky=E, padx=5)
-        #self.channel_label.pack(pady=defaultPadding)
         self.channel_to_play = Spinbox(self, from_=0, to=15)
         self.channel_to_play.grid(row=5,column=1,sticky=W)
-        #self.channel_to_play.pack(pady=defaultPadding)
         self.octave_label = Label(self, text = 'Octave target:')
         self.octave_label.grid(row=5,column=2,sticky=E,padx=5)
-        #self.octave_label.pack(pady=defaultPadding)
         octave_range = StringVar(self)
         self.octave_spinner = Spinbox(self, from_=-1, to=1, textvariable=octave_range)
         self.octave_spinner.grid(row=5,column=3,sticky=W)
-        #self.octave_spinner.pack(pady=defaultPadding)
         octave_range.set('0')
         self.delay_label = Label(self, text="Playback delay (sec):")
         self.delay_label.grid(row=6,column=0,sticky=E, padx=5)
-        #self.delay_label.pack(pady=defaultPadding)
+        ############################
+        # Playback row:
+        ############################
         playback_delay = StringVar(self)
         self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=playback_delay)
         self.delay_spinner.grid(row=6,column=1,sticky=W)
-        #self.delay_spinner.pack(pady=defaultPadding)
         playback_delay.set('5')
         self.play_button = Button(self, text="Play", command=self.play_song, state='disabled')
         self.play_button.grid(row=6,column=2,sticky=W)
-        #self.play_button.pack(pady=defaultPadding)
         self.stop_button = Button(self, text="Stop", command=self.stop_playing, state='disabled')
         self.stop_button.grid(row=6,column=3,sticky=W)
-        #self.stop_button.pack(pady=defaultPadding)
+        ############################
+        # Progress bar row:
+        ############################
         self.progress_bar = ttk.Progressbar(length=950)
         self.progress_bar.grid(row=7,column=0,columnspan=4, pady=10, padx=5)
-        #self.progress_bar.pack(pady=defaultPadding)
-        # progress_bar.step(float) to set current song progress
+        ########################################
+        # Channels and instruments detected row:
+        ########################################
         self.label_channels = Label(self, text = 'Instrument channels in file:')
         self.label_channels.grid(row=8,columnspan=4)
         self.channel_list = Text(self, width=65, height=10)
         self.channel_list.grid(row=9,column=0,columnspan=4)
-        #self.channel_list.pack(pady=defaultPadding)
         self.channel_list.config(state='disabled')
 
     def file(self):
@@ -1024,40 +1034,44 @@ class Main_Window(Tk):
         global AllTracks
         global ChannelToPlay
         global delay_time
+        global SongPaused
         global GuitarToneSwitch
         global HoldNotes
         global OctaveTarget
-        self.progress_bar['value'] = 0.0
-        self.update()
-        # How long we'll wait before playback begins, so the user has time to switch
-        # back over to FFXIV:
-        delay_time = int(self.delay_spinner.get())
-        self.action_label.config(text="Change to FFXIV window in the next " + self.delay_spinner.get() + " seconds.")
-        if self.LongNotes.get() == 1:
-            HoldNotes = True
+        if (SongPaused):
+            SongPaused = False
         else:
-            HoldNotes = False
-        if self.LoopBox.get() == 1:
-            LoopSong = True
-            SinglePlay = False
-            print("Looping enabled.")
-        else:
-            SinglePlay = True
-            LoopSong = False
-            print("Looping disabled.")
-        if self.AllTracks.get() == 1:
-            AllTracks = True
-        else:
-            ChannelToPlay = int(self.channel_to_play.get())
-            AllTracks = False
-        if self.ToneSwitch.get() == 1:
-            GuitarToneSwitch = True
-        else:
-            GuitarToneSwitch = False
-        OctaveTarget = int(self.octave_spinner.get())
-        start_new_thread(play_midi, (track_name, ))
-        self.stop_button.config(state='active')
-        self.play_button.config(state='disabled')
+            self.progress_bar['value'] = 0.0
+            self.update()
+            # How long we'll wait before playback begins, so the user has time to switch
+            # back over to FFXIV:
+            delay_time = int(self.delay_spinner.get())
+            self.action_label.config(text="Change to FFXIV window in the next " + self.delay_spinner.get() + " seconds.")
+            if self.LongNotes.get() == 1:
+                HoldNotes = True
+            else:
+                HoldNotes = False
+            if self.LoopBox.get() == 1:
+                LoopSong = True
+                SinglePlay = False
+                print("Looping enabled.")
+            else:
+                SinglePlay = True
+                LoopSong = False
+                print("Looping disabled.")
+            if self.AllTracks.get() == 1:
+                AllTracks = True
+            else:
+                ChannelToPlay = int(self.channel_to_play.get())
+                AllTracks = False
+            if self.ToneSwitch.get() == 1:
+                GuitarToneSwitch = True
+            else:
+                GuitarToneSwitch = False
+            OctaveTarget = int(self.octave_spinner.get())
+            start_new_thread(play_midi, (track_name, ))
+            self.stop_button.config(state='active')
+            self.play_button.config(state='disabled')
 
     def stop_playing(self):
         global QuitPlay
