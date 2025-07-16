@@ -260,4 +260,4 @@ Ensure keybindings are set as per the following:
 
 - macOS command line example above requires Homebrew
 
-- I'm hoping to start testing this on Mac relatively soon, as I prepare to shift over to that platform
+- I'm hoping to start testing this on Mac relatively soon, as I prepare to shift over to that platform. Any additional instructions required will be added then.
