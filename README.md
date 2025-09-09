@@ -154,8 +154,8 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - Run the following command to get your UID and GID:
 `echo $(id -u):$(id -g)`
 
-- Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
-`--socket-own=UID:GID`
+- Copy the ydotoold.service file to /usr/lib/systemd/system/ydotoold.service (if it doesn't exist yet):
+`sudo cp ./ydotoold /usr/lib/systemd/system/`
 
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
@@ -164,7 +164,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
 
 - You'll need to have the systemd user service running to setup the virtual input device:
-`sudo systemctl enable ydotool`
+`sudo systemctl enable ydotoold`
 
 - Add the following line to your ~/.bashrc file:
 `export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
@@ -172,10 +172,10 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - close any open terminal windows after adding this line, and then re-open before continuing
 
 - Start the service:
-`sudo systemctl start ydotool`
+`sudo systemctl start ydotoold`
 
 - Optionally check if it started:
-`sudo systemctl status ydotool`
+`sudo systemctl status ydotoold`
 
 - Check to see if you now own the socket tmp file:
 `ls -l /tmp/.ydotool_socket`
