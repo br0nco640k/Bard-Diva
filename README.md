@@ -24,8 +24,10 @@ If you're on Windows, but having trouble getting Bard Music Player to work, ther
 
 or
 
-`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense. You may
-also have to add the path for mido to your PATH in .bashrc
+`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense (Arch does this BS, btw). You may
+also have to add the path for mido to your PATH in .bashrc. I may eventually change the instructions to use pipx instead, since this externally managed nonsense is a growing
+pestilence taking root within the Python community, and at some point fighting against will become the greater effort. This current fix does work, but comes with a wide array
+of warnings that look slightly scary.
 
 ### Wayland users:
 
