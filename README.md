@@ -10,7 +10,7 @@ If you're on Windows, but having trouble getting Bard Music Player to work, ther
 
 | Debian-based distros         | Fedora                        | Arch Linux                  | Void Linux                     |
 |:----------------------------:|:-----------------------------:|:---------------------------:|:------------------------------:|
-| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk`              | `xbps-install python3-tkinter` |
+| `apt-get install python3-tk` | `dnf install python3-tkinter` | `sudo pacman -S tk`         | `xbps-install python3-tkinter` |
 |                              |                               | `sudo pacman -S python-pip` |                                |
 
 | Bazzite, Kinoite, Silverblue            | Windows 10/11                       | macOS                          |
