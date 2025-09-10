@@ -2,17 +2,16 @@
 
 Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux (and other systems that support Python 3 and Tkinter)!
 
-I have personally tested this on Windows 11, Fedora, !Pop_OS, Alma and Bazzite, under both X11 and Wayland. I had no luck with Ubuntu 25.04, thus far, but may try again eventually. I'd 
-be interested in hearing about any issues with other distros in the Issues section of this repository. I believe that it works on Mac, but I'm unable to test it.
+I have personally tested this on Windows 11, Fedora, !Pop_OS, Alma, Bazzite and Arch, under both X11 and Wayland. I had no luck with Ubuntu 25.04, thus far, but may try again eventually. I'd be interested in hearing about any issues with other distros in the Issues section of this repository. I believe that it works on Mac, but I'm unable to test it.
 
-If you're on Windows, but having trouble getting Bard Music Player to work, there's a fork that skips the update check that does still work. I've been inspired to get this working
-again lately so that I no longer need to depend on Bard Music Player, which does not work under Linux (or Mac) anyway.
+If you're on Windows, but having trouble getting Bard Music Player to work, there's a fork that skips the update check that does still work. I've been inspired to get this working again lately so that I no longer need to depend on Bard Music Player, which does not work under Linux (or Mac) anyway.
 
 ### To install dependencies:
 
-| Debian-based distros         | Fedora                        | Arch Linux     | Void Linux                     |
-|:----------------------------:|:-----------------------------:|:--------------:|:------------------------------:|
-| `apt-get install python3-tk` | `dnf install python3-tkinter` | `pacman -S tk` | `xbps-install python3-tkinter` |
+| Debian-based distros         | Fedora                        | Arch Linux                  | Void Linux                     |
+|:----------------------------:|:-----------------------------:|:---------------------------:|:------------------------------:|
+| `apt-get install python3-tk` | `dnf install python3-tkinter` | `sudo pacman -S tk`         | `xbps-install python3-tkinter` |
+|                              |                               | `sudo pacman -S python-pip` |                                |
 
 | Bazzite, Kinoite, Silverblue            | Windows 10/11                       | macOS                          |
 |:---------------------------------------:|:-----------------------------------:|:------------------------------:|
@@ -23,12 +22,16 @@ again lately so that I no longer need to depend on Bard Music Player, which does
 
 `pip install -r requirements.txt`
 
-Note: pip is MASSIVELY broken on Ubuntu, and I have not found a way to install the requirements yet! I have stopped trying to figure it out, sadly.
+or
+
+`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense (Arch does this BS, btw). You may
+also have to add the path for mido to your PATH in .bashrc. I may eventually change the instructions to use pipx instead, since this externally managed nonsense is a growing
+pestilence taking root within the Python community, and at some point fighting against will become the greater effort. This current fix does work, but comes with a wide array
+of warnings that look slightly scary.
 
 ### Wayland users:
 
-You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time. Windows, 
-Mac and X11 users will still be importing and using pyautogui instead, and can skip this section.
+You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time. Windows, Mac and X11 users will still be importing and using pyautogui instead, and can skip this section.
 
 #### Bazzite/Kinoite/Silverblue:
 
@@ -153,8 +156,8 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - Run the following command to get your UID and GID:
 `echo $(id -u):$(id -g)`
 
-- Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
-`--socket-own=UID:GID`
+- Copy the ydotoold.service file to /usr/lib/systemd/system/ydotoold.service (if it doesn't exist yet):
+`sudo cp ./ydotoold /usr/lib/systemd/system/`
 
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
@@ -163,7 +166,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 `ExecStart=/usr/bin/ydotoold --socket-own=1000:1000`
 
 - You'll need to have the systemd user service running to setup the virtual input device:
-`sudo systemctl enable ydotool`
+`sudo systemctl enable ydotoold`
 
 - Add the following line to your ~/.bashrc file:
 `export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
@@ -171,10 +174,10 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - close any open terminal windows after adding this line, and then re-open before continuing
 
 - Start the service:
-`sudo systemctl start ydotool`
+`sudo systemctl start ydotoold`
 
 - Optionally check if it started:
-`sudo systemctl status ydotool`
+`sudo systemctl status ydotoold`
 
 - Check to see if you now own the socket tmp file:
 `ls -l /tmp/.ydotool_socket`
@@ -189,7 +192,7 @@ git clone  https://github.com/ReimuNotMoe/ydotool
 cd ydotool  
 mkdir build && cd build  
 cmake -DSYSTEMD_USER_SERVICE=OFF -DSYSTEMD_SYSTEM_SERVICE=ON ..  
-make -j `nproc`  
+make -j \`nproc\`  
 sudo cp ydotool /usr/local/bin  
 sudo cp ydotoold /usr/local/bin  
 sudo chmod +s $(which ydotool)  
@@ -258,3 +261,5 @@ Ensure keybindings are set as per the following:
 - Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID. This program requires Python 3.10 or newer (3.12 is the latest right now).
 
 - macOS command line example above requires Homebrew
+
+- I'm hoping to start testing this on Mac relatively soon, as I prepare to shift over to that platform. Any additional instructions required will be added then.
