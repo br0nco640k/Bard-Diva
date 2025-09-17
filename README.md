@@ -244,7 +244,7 @@ Ensure keybindings are set as per the following:
 
 - Song looping
 
-- Experimental Wayland support!
+- Wayland support!
 
 ### Planned features:
 
