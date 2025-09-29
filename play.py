@@ -684,6 +684,7 @@ def frequency_to_readable_note(frequency):
                      f"\t\t note NOT FOUND, frequency: {frequency}")
 
 def analyze_song():
+    print('analyzing the song...')
     # Do some things here, like open a new window
 
 def play_midi(filename):
@@ -986,7 +987,8 @@ class Main_Window(Tk):
         self.play_button.grid(row=6,column=2,sticky=W)
         self.stop_button = Button(self, text="Stop", command=self.stop_playing, state='disabled')
         self.stop_button.grid(row=6,column=3,sticky=W)
-        self.analyze_button = Button(self, text="Analyze...")
+        self.analyze_button = Button(self, text="Analyze...", command=analyze_song, state='disabled')
+        self.analyze_button.grid(row=6, column=4, sticky=W)
         ############################
         # Progress bar row:
         ############################
@@ -1036,23 +1038,23 @@ class Main_Window(Tk):
                     # If we have a note_on, then the channel it occurs on is used:
                     TracksDetected[int(msg.channel)] = True
                     _tempNote = note_to_frequency(msg.note)
-                    if (_tempNote < 32)
+                    if (_tempNote < 32):
                         Octave_0 += 1
-                    elif (_tempNote > 32) and (_tempNote < 65)
+                    elif (_tempNote > 32) and (_tempNote < 65):
                         Octave_1 += 1
-                    elif (_tempNote > 65) and (_tempNote < 130)
+                    elif (_tempNote > 65) and (_tempNote < 130):
                         Octave_2 += 1
-                    elif (_tempNote > 130) and (_tempNote < 261)
+                    elif (_tempNote > 130) and (_tempNote < 261):
                         Octave_3 += 1
-                    elif (_tempNote > 261) and (_tempNote < 523)
+                    elif (_tempNote > 261) and (_tempNote < 523):
                         Octave_4 += 1  
-                    elif (_tempNote > 523) and (_tempNote < 1046)
+                    elif (_tempNote > 523) and (_tempNote < 1046):
                         Octave_5 += 1                   
-                    elif (_tempNote > 1046) and (_tempNote < 2092)
+                    elif (_tempNote > 1046) and (_tempNote < 2092):
                         Octave_6 += 1
-                    elif (_tempNote > 2092) and (_tempNote < 4185)
+                    elif (_tempNote > 2092) and (_tempNote < 4185):
                         Octave_7 += 1
-                    elif (_tempNote > 4185)
+                    elif (_tempNote > 4185):
                         Octave_8 += 1
                     freq_total += _tempNote
                     note_count += 1
