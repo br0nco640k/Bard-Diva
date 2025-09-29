@@ -55,9 +55,20 @@ OctaveTarget = 0
 width = 1250
 height = 750
 track_name=""
+# Counts for the notes in each octave range:
+Octave_0 = 0
+Octave_1 = 0
+Octave_2 = 0
+Octave_3 = 0
+Octave_4 = 0
+Octave_5 = 0
+Octave_6 = 0
+Octave_7 = 0
+Octave_8 = 0
 # "Constants" (Python does not have constants, but I'll make them upper case to be obvious)
 DOWN = True
 UP = False
+
 
 ################################################################################
 # Some dictionaries for lookups:
@@ -672,6 +683,9 @@ def frequency_to_readable_note(frequency):
     return readable_notes.get(frequency,
                      f"\t\t note NOT FOUND, frequency: {frequency}")
 
+def analyze_song():
+    # Do some things here, like open a new window
+
 def play_midi(filename):
     global LoopSong
     global SinglePlay
@@ -972,6 +986,7 @@ class Main_Window(Tk):
         self.play_button.grid(row=6,column=2,sticky=W)
         self.stop_button = Button(self, text="Stop", command=self.stop_playing, state='disabled')
         self.stop_button.grid(row=6,column=3,sticky=W)
+        self.analyze_button = Button(self, text="Analyze...")
         ############################
         # Progress bar row:
         ############################
@@ -1007,11 +1022,39 @@ class Main_Window(Tk):
             self.channel_list.delete("1.0", END)
             freq_total = 0
             note_count = 0
+            Octave_0 = 0
+            Octave_1 = 0
+            Octave_2 = 0
+            Octave_3 = 0 
+            Octave_4 = 0
+            Octave_5 = 0
+            Octave_6 = 0
+            Octave_7 = 0
+            Octave_8 = 0
             for msg in midi_file:
                 if msg.type == "note_on":
                     # If we have a note_on, then the channel it occurs on is used:
-                    TracksDetected[int(msg.channel)] = True                        
-                    freq_total += note_to_frequency(msg.note)
+                    TracksDetected[int(msg.channel)] = True
+                    _tempNote = note_to_frequency(msg.note)
+                    if (_tempNote < 32)
+                        Octave_0 += 1
+                    elif (_tempNote > 32) and (_tempNote < 65)
+                        Octave_1 += 1
+                    elif (_tempNote > 65) and (_tempNote < 130)
+                        Octave_2 += 1
+                    elif (_tempNote > 130) and (_tempNote < 261)
+                        Octave_3 += 1
+                    elif (_tempNote > 261) and (_tempNote < 523)
+                        Octave_4 += 1  
+                    elif (_tempNote > 523) and (_tempNote < 1046)
+                        Octave_5 += 1                   
+                    elif (_tempNote > 1046) and (_tempNote < 2092)
+                        Octave_6 += 1
+                    elif (_tempNote > 2092) and (_tempNote < 4185)
+                        Octave_7 += 1
+                    elif (_tempNote > 4185)
+                        Octave_8 += 1
+                    freq_total += _tempNote
                     note_count += 1
                 # a program_change for each channel to identify the intended instrument for that channel:
                 if msg.type == 'program_change': # Every program change sets a channel to an instrument type
@@ -1019,6 +1062,7 @@ class Main_Window(Tk):
                     # and we can populate an options list for them all, by instrument name
                     self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + program_to_instrument_name(msg.program) + "\n")
             keylist = TracksDetected.keys()
+            self.analyze_button.config(state='normal')
             self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
             avg_note = round(freq_total/note_count)
             if (avg_note <= 247):
