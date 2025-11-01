@@ -198,6 +198,7 @@ notes_zero = {
     1480: "g",
     1397: "4",
     1319: "3",
+    1245: "g",
     1175: "2",
     1047: "8",
     1109: "d",
@@ -552,10 +553,13 @@ programs = {
 # Convert a frequency (given in Hz) into a human readable note:
 readable_notes = {
     1864: "B flat Octave 6",
+    1865: "B flat Octave 6",
     1760: "A Octave 6",
     1568: "G Octave 6",
+    1480: "F# Octave 6",
     1397: "F Octave 6",
     1319: "E Octave 6",
+    1245: "D# Octave 6",
     1175: "D Octave 6",
     1109: "C# Octave 6",
     1047: "C Octave 6",
