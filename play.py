@@ -47,6 +47,7 @@ HeldKeys = ""
 NoteDelayTime = 512 # Given in miliseconds
 # Gui option to set the delay time for window switching:
 delay_time = 5 # in seconds
+Tempo = 500000 # In microseconds per beat(quarter note)
 AllTracks = False
 GuitarToneSwitch = False
 ChannelToPlay = 0
@@ -687,9 +688,9 @@ def frequency_to_readable_note(frequency):
     return readable_notes.get(frequency,
                      f"\t\t note NOT FOUND, frequency: {frequency}")
 
-def analyze_song():
-    print('analyzing the song...')
-    # Do some things here, like open a new window
+def pause_song():
+    global SongPaused
+    SongPaused = not SongPaused
 
 def play_midi(filename):
     global LoopSong
@@ -730,8 +731,10 @@ def play_midi(filename):
     elapsed_time = 0.0
     while (LoopSong) or (SinglePlay):
         for message in midi_file.play():
-            while (SongPaused): # This probably won't work, but I'm testing it
-                Time.sleep(1)
+            #if (SongPaused): # This probably won't work, but I'm testing it
+                #midi_file.set_tempo(tempo=0, time=0) # This is absolutely not the way to change the tempo, and the docs completely suck for mido
+            #else:
+                #midi_file.set_tempo(tempo=500000, time=0)
             previous_time = current_time
             current_time = Time.time()
             elapsed_time += (current_time - previous_time)
@@ -890,6 +893,7 @@ def play_midi(filename):
     app.action_label.config(text="Ending song.")
     app.play_button.config(state='active')
     app.stop_button.config(state='disabled')
+    app.pause_button.config(state='disabled')
     QuitPlay = False
 
 # The NEW GUI stuff begins here:
@@ -987,12 +991,13 @@ class Main_Window(Tk):
         self.delay_spinner = Spinbox(self, from_=1, to=10, textvariable=playback_delay)
         self.delay_spinner.grid(row=6,column=1,sticky=W)
         playback_delay.set('5')
+
         self.play_button = Button(self, text="Play", command=self.play_song, state='disabled')
         self.play_button.grid(row=6,column=2,sticky=W)
         self.stop_button = Button(self, text="Stop", command=self.stop_playing, state='disabled')
         self.stop_button.grid(row=6,column=3,sticky=W)
-        self.analyze_button = Button(self, text="Analyze...", command=analyze_song, state='disabled')
-        self.analyze_button.grid(row=6, column=4, sticky=W)
+        self.pause_button = Button(self, text="Pause/Resume", command=pause_song, state='disabled')
+        self.pause_button.grid(row=6, column=4, sticky=W)
         ############################
         # Progress bar row:
         ############################
@@ -1070,14 +1075,32 @@ class Main_Window(Tk):
             keylist = TracksDetected.keys()
             self.analyze_button.config(state='normal')
             self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
+            if (Octave_0 > 1):
+                self.channel_list.insert(END, "Octave 0: " + str(Octave_0) + "\n")
+            if (Octave_1 > 1):
+                self.channel_list.insert(END, "Octave 1: " + str(Octave_1) + "\n")
+            if (Octave_2 > 1):
+                self.channel_list.insert(END, "Octave 2: " + str(Octave_2) + "\n")
+            if (Octave_3 > 1):
+                self.channel_list.insert(END, "Octave 3: " + str(Octave_3) + "\n")
+            if (Octave_4 > 1):
+                self.channel_list.insert(END, "Octave 4: " + str(Octave_4) + "\n")
+            if (Octave_5 > 1):
+                self.channel_list.insert(END, "Octave 5: " + str(Octave_5) + "\n")
+            if (Octave_6 > 1):
+                self.channel_list.insert(END, "Octave 6: " + str(Octave_6) + "\n")
+            if (Octave_7 > 1):
+                self.channel_list.insert(END, "Octave 7: " + str(Octave_7) + "\n")
+            if (Octave_8 > 1):
+                self.channel_list.insert(END, "Octave 8: " + str(Octave_8) + "\n")
             avg_note = round(freq_total/note_count)
             if (avg_note <= 247):
-                self.channel_list.insert(END, "Recommended octave: -1\n")
+                self.channel_list.insert(END, "Recommended octave target: -1\n")
             elif (avg_note <= 494):
-                self.channel_list.insert(END, "Recommended octave: 0\n")
+                self.channel_list.insert(END, "Recommended octave target: 0\n")
             else:
-                self.channel_list.insert(END, "Recommended octave: +1\n")
-            self.channel_list.insert(END, "Average note frequency: " + str(avg_note) + "\n")
+                self.channel_list.insert(END, "Recommended octave target: +1\n")
+            #self.channel_list.insert(END, "Average note frequency: " + str(avg_note) + "\n")
             self.channel_list.config(state='disabled')
         
     def play_song(self):
@@ -1124,6 +1147,7 @@ class Main_Window(Tk):
             start_new_thread(play_midi, (track_name, ))
             self.stop_button.config(state='active')
             self.play_button.config(state='disabled')
+            self.pause_button.config(state='active')
 
     def stop_playing(self):
         global QuitPlay
@@ -1132,6 +1156,7 @@ class Main_Window(Tk):
         QuitPlay = True
         self.stop_button.config(state='disabled')
         self.play_button.config(state='active')
+        self.pause_button.config(state='disabled')
 
 # Instantiate window:
 app = Main_Window()
