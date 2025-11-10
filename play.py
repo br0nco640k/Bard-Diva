@@ -1073,7 +1073,7 @@ class Main_Window(Tk):
                     # and we can populate an options list for them all, by instrument name
                     self.channel_list.insert(END, "Chan: " + str(msg.channel) + " Inst: " + program_to_instrument_name(msg.program) + "\n")
             keylist = TracksDetected.keys()
-            self.analyze_button.config(state='normal')
+            #self.analyze_button.config(state='normal')
             self.channel_list.insert(END, "Channels detected: " + str(keylist) + "\n")
             if (Octave_0 > 1):
                 self.channel_list.insert(END, "Octave 0: " + str(Octave_0) + "\n")
