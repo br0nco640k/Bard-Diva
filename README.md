@@ -4,7 +4,7 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 
 I have personally tested this on Windows 11, Fedora, !Pop_OS, Alma, Bazzite and Arch, under both X11 and Wayland. I had no luck with Ubuntu 25.04, thus far, but may try again eventually. I'd be interested in hearing about any issues with other distros in the Issues section of this repository. I believe that it works on Mac, but I'm unable to test it.
 
-If you're on Windows, but having trouble getting Bard Music Player to work, there's a fork that skips the update check that does still work. I've been inspired to get this working again lately so that I no longer need to depend on Bard Music Player, which does not work under Linux (or Mac) anyway.
+Even though I have abandoned Windows, I will try to continue supporting it, as a backup in case Bard Music Player breaks again. It has been working perfectly on Windows, thus far, my most recent tests being only about a month ago. I believe that it works on Mac as well, since the original source code, from several forks ago, was for Mac, and I haven't done anything platform specific, except for adding optional Wayland support for Linux users. At some point in the future I will definitely try to test it on a Mac. I'm running on the assumption that the new Tkinter UI will also work fine on a Mac, since it works on both Windows and Linux.
 
 ### To install dependencies:
 
@@ -238,7 +238,7 @@ Ensure keybindings are set as per the following:
 
 - Song progress bar
 
-- Ability to hold long notes (highly experimental right now)
+- Ability to hold long notes (highly experimental right now, rarely works as intended, probably needs a substantial rewrite)
 
 - Ability to select an octave range target
 
@@ -246,15 +246,19 @@ Ensure keybindings are set as per the following:
 
 - Wayland support!
 
+- Song analyzer, to display distribution of notes across each octave from 0 to 8 (3,4 & 5 are octave target 0)
+
 ### Planned features:
 
-- Ability to pause songs
+- Ability to pause songs (this will require a substantial rewrite, as Mido does not support this functionality at all)
 
-- Ability to selectively enable or disable any channel
+- Tempo changes, to play a song faster or slower (this will be addressed in the big rewrite for song pausing)
 
-- Network synchronization for multi-box performance (using zeroconf, perhaps)
+- Chord simulation (also requires the big rewrite mentioned above, as Mido makes this nearly impossible to implement)
 
-- Visual song analyzer, to display distribution of notes across each octave from 0 to 8
+- Ability to selectively enable or disable any channel (0 through 15, so the UI could get messy)
+
+- Network synchronization for multi-box performance (using zeroconf, perhaps, may never happen, it's a big job)
 
 ### Some notes for Windows 10/11 and macOS:
 
@@ -262,4 +266,4 @@ Ensure keybindings are set as per the following:
 
 - macOS command line example above requires Homebrew
 
-- I'm hoping to start testing this on Mac relatively soon, as I prepare to shift over to that platform. Any additional instructions required will be added then.
+- I'm hoping to start testing this on Mac relatively soon. Hopefully it still works.
