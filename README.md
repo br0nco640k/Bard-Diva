@@ -1,5 +1,5 @@
 # Bard Diva
-
+  
 Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode, akin to BardMusicPlayer, but for Linux (and other systems that support Python 3 and Tkinter)!
 
 I have personally tested this on Windows 11, Fedora, !Pop_OS, Alma, Bazzite and Arch, under both X11 and Wayland. I had no luck with Ubuntu 25.04, thus far, but may try again eventually. I'd be interested in hearing about any issues with other distros in the Issues section of this repository. I believe that it works on Mac, but I'm unable to test it.
@@ -25,8 +25,19 @@ Even though I have abandoned Windows, I will try to continue supporting it, as a
 or
 
 `pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense (Arch does this 
-BS, btw). You may also have to add the path for mido to your PATH in .bashrc. I will update these instructions to describe how to install the requirements 
-inside of a virtual environment soon, as that is the long term solution to this pesky situation.
+BS, btw). You may also have to add the path for mido to your PATH in .bashrc. 
+
+or (preferred going forward) create a virtual environment first:
+
+`python3 -m venv .venv`
+`source .venv/bin/activate`
+`pip install -r requirements.txt`
+
+If you create a virtual environment, you will need to activate it before each time that you run Bard Diva:
+`source .venv/bin/activate`
+
+...and deactivate it when you are done running Bard Diva:
+`deactivate`
 
 ### Wayland users:
   
@@ -156,7 +167,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 `echo $(id -u):$(id -g)`
 
 - Copy the ydotoold.service file to /usr/lib/systemd/system/ydotoold.service (if it doesn't exist yet):
-`sudo cp ./ydotoold /usr/lib/systemd/system/`
+`sudo cp ydotoold.service /usr/lib/systemd/system/`
 
 - Edit the /usr/lib/systemd/system/ydotool.service file to add the following to the ExecStart line:
 `--socket-own=UID:GID`
