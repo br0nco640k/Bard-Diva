@@ -30,11 +30,13 @@ BS, btw). You may also have to add the path for mido to your PATH in .bashrc.
 or (preferred going forward) create a virtual environment first:
 
 `python3 -m venv .venv`
-`source .venv/bin/activate`
+  
+`source .venv/bin/activate` (may require specifying a version of activate for other shells, for example activate.fish for fish shell)
+  
 `pip install -r requirements.txt`
 
 If you create a virtual environment, you will need to activate it before each time that you run Bard Diva:
-`source .venv/bin/activate`
+`source .venv/bin/activate` (may require specifying a version of activate for other shells, for example activate.fish for fish shell)
 
 ...and deactivate it when you are done running Bard Diva:
 `deactivate`
