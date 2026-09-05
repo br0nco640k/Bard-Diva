@@ -5,9 +5,9 @@ Python script that plays MIDI files in Final Fantasy XIV's Bard Performance Mode
 I have personally tested this on Windows 11, Fedora, !Pop_OS, Alma, Bazzite and Arch, under both X11 and Wayland. I had no luck with Ubuntu 25.04, thus far, but may try again eventually. I'd be interested in hearing about any issues with other distros in the Issues section of this repository. I believe that it works on Mac, but I'm unable to test it.
 
 Even though I have abandoned Windows, I will try to continue supporting it, as a backup in case Bard Music Player breaks again. It has been working perfectly on Windows, thus far, my most recent tests being only about a month ago. I believe that it works on Mac as well, since the original source code, from several forks ago, was for Mac, and I haven't done anything platform specific, except for adding optional Wayland support for Linux users. At some point in the future I will definitely try to test it on a Mac. I'm running on the assumption that the new Tkinter UI will also work fine on a Mac, since it works on both Windows and Linux.
-
+  
 ### To install dependencies:
-
+  
 | Debian-based distros         | Fedora                        | Arch Linux                  | Void Linux                     |
 |:----------------------------:|:-----------------------------:|:---------------------------:|:------------------------------:|
 | `apt-get install python3-tk` | `dnf install python3-tkinter` | `sudo pacman -S tk`         | `xbps-install python3-tkinter` |
@@ -27,13 +27,13 @@ or
 `pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense (Arch does this 
 BS, btw). You may also have to add the path for mido to your PATH in .bashrc. I will update these instructions to describe how to install the requirements 
 inside of a virtual environment soon, as that is the long term solution to this pesky situation.
-  
+
 ### Wayland users:
-
+  
 You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time. Windows, Mac and X11 users will still be importing and using pyautogui instead, and can skip this section.
-
+  
 #### Bazzite/Kinoite/Silverblue:
-
+  
 Bazzite comes with ydotool preinstalled. Not sure about the other two here.
 
 - First we'll need to copy the ydotool.service file to another location, where it can be edited:
@@ -65,9 +65,9 @@ Bazzite comes with ydotool preinstalled. Not sure about the other two here.
 
 - Optionally check if it started:
 `systemctl --user status ydotool_home.service`
-
+  
 #### Debian based distros:
-
+  
 - Install ydotool:
 `sudo apt-get install ydotool`
 
@@ -113,9 +113,9 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 `sudo chown 1000:1000 /tmp/.ydotool_socket`
 
 - With Ubuntu 25.04 no part of this process went smoothly, I could not get pip to install the required components, nor did I actually get ydotool working, and the program was not functional.
-
+  
 #### Fedora/RHEL/Rocky/Alma:
-
+  
 - Install ydotool:
 `sudo dnf install ydotool`
 
@@ -146,9 +146,9 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 `ls -l /tmp/.ydotool_socket`
 
 - If so, it should be ready to use now!
-
+  
 #### Arch based distros:
-
+  
 - Install ydotool:
 `sudo pacman -S ydotool`
 
@@ -180,9 +180,9 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 
 - Check to see if you now own the socket tmp file:
 `ls -l /tmp/.ydotool_socket`
-
+  
 #### Void Linux:
-
+  
 I have no experience with Void Linux, and my exeperience with other distros involves systemd, so I'll muddle through here, as best I can.
 
 I found this for getting ydotool installed:
@@ -206,25 +206,27 @@ sudo sv up ydotoold
 
 Modifying the creation of the service script in a fashion similar to other distros, by adding the socket argument, might work similarly to systemd based systems, but I'm 
 unable to test or verify that. It's more of a place to start, since I have never used Void. If anybody has this working on Void, open an issue or message me, and I'll update it.
-
+  
 ### Before running:
-
+  
 Ensure keybindings are set as per the following:
 ![image info](./perf_settings.png)
 ![image info](./tone_switching.jpg)
-
+  
 ### Running:
-
+  
 - Open up Bard Performance Mode in FFXIV with instrument of choice
 
 - Run `python play.py` or `./play.py` and select the files in the GUI. If you get errors about pyautogui, try using the Wayland instructions instead (above and below), which in theory should work on all Linux systems.
 
 - On Wayland run `python play.py wayland` or `./play.py wayland` instead
 
-- Switch back to FFXIV, and rock out. The song will start playing after the user selectable delay timer.
+- Open up the desired midi file (songs from the Bard Music Player archive work really well, especially solo songs), and hit play.
 
+- Switch back to FFXIV, and rock out. The song will start playing after the user selectable delay timer (default is 5 seconds).
+  
 ### New features:
-
+  
 - Play all channels or just play a single channel, which is good for songs that work better with one or the other
 
 - Selectable delay time in GUI
@@ -246,9 +248,9 @@ Ensure keybindings are set as per the following:
 - Wayland support!
 
 - Song analyzer, to display distribution of notes across each octave from 0 to 8 (3,4 & 5 are octave target 0)
-
+  
 ### Planned features:
-
+  
 - Ability to pause songs (this will require a substantial rewrite, as Mido does not support this functionality at all)
 
 - Tempo changes, to play a song faster or slower (this will be addressed in the big rewrite for song pausing)
@@ -261,7 +263,7 @@ Ensure keybindings are set as per the following:
 
 ### Some notes for Windows 10/11 and macOS:
 
-- Windows requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID. This program requires Python 3.10 or newer (3.12 is the latest right now).
+- Windows instructions requires the App Installer application from the Windows Store, which is usually installed by default, but on rare occassions is not installed, in order to use winget from the command line. After searching for Python.Python, you must install the precise listed version that you want to use according to it's ID. This program requires Python 3.10 or newer (3.12 is the latest right now).
 
 - macOS command line example above requires Homebrew
 
