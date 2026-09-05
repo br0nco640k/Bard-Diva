@@ -228,15 +228,19 @@ Ensure keybindings are set as per the following:
   
 ### Running:
   
-- Open up Bard Performance Mode in FFXIV with instrument of choice
+- Open up Bard Performance Mode in FFXIV with instrument of choice.
+
+- If you created a virtual environment for installing requirements, run the required activate script in .venv/bin/: `source .venv/bin/activate`
 
 - Run `python play.py` or `./play.py` and select the files in the GUI. If you get errors about pyautogui, try using the Wayland instructions instead (above and below), which in theory should work on all Linux systems.
 
-- On Wayland run `python play.py wayland` or `./play.py wayland` instead
+- On Wayland run `python play.py wayland` or `./play.py wayland` instead.
 
 - Open up the desired midi file (songs from the Bard Music Player archive work really well, especially solo songs), and hit play.
 
 - Switch back to FFXIV, and rock out. The song will start playing after the user selectable delay timer (default is 5 seconds).
+
+- If you created a virtual environment for installing requirements above, run `deactivate` when you are finished using Bard Diva.
   
 ### New features:
   
