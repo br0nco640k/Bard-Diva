@@ -24,11 +24,10 @@ Even though I have abandoned Windows, I will try to continue supporting it, as a
 
 or
 
-`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense (Arch does this BS, btw). You may
-also have to add the path for mido to your PATH in .bashrc. I may eventually change the instructions to use pipx instead, since this externally managed nonsense is a growing
-pestilence taking root within the Python community, and at some point fighting against will become the greater effort. This current fix does work, but comes with a wide array
-of warnings that look slightly scary.
-
+`pip install --user --break-system-packages -r requirements.txt` for systems that give errors about externally managed environment nonsense (Arch does this 
+BS, btw). You may also have to add the path for mido to your PATH in .bashrc. I will update these instructions to describe how to install the requirements 
+inside of a virtual environment soon, as that is the long term solution to this pesky situation.
+  
 ### Wayland users:
 
 You must install ydotool to enable keypresses to be sent, as a workaround to Wayland's security protocols. In this case pyautogui is not used at all, and will not be imported at run time. Windows, Mac and X11 users will still be importing and using pyautogui instead, and can skip this section.
