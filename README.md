@@ -30,8 +30,14 @@ BS, btw). You may also have to add the path for mido to your PATH in .bashrc.
 or (preferred going forward) create a virtual environment first:
 
 `python3 -m venv .venv`
+
+Next activate your newly created virtual environment:
   
-`source .venv/bin/activate` (may require specifying a version of activate for other shells, for example activate.fish for fish shell)
+`source .venv/bin/activate` for BASH
+
+`source .venv/bin/activate.fish` for FISH
+
+Then install the required python modules:
   
 `pip install -r requirements.txt`
 
@@ -230,7 +236,11 @@ Ensure keybindings are set as per the following:
   
 - Open up Bard Performance Mode in FFXIV with instrument of choice.
 
-- If you created a virtual environment for installing requirements, run the required activate script in .venv/bin/: `source .venv/bin/activate`
+- If you created a virtual environment for installing requirements, run the required activate script in .venv/bin/:
+
+	- `source .venv/bin/activate` for BASH
+	- `source .venv/bin/activate.fish` for FISH
+
 
 - Run `python play.py` or `./play.py` and select the files in the GUI. If you get errors about pyautogui, try using the Wayland instructions instead (above and below), which in theory should work on all Linux systems.
 
