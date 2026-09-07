@@ -112,7 +112,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - You'll need to have the systemd user service running to setup the virtual input device:
 `sudo systemctl enable ydotool`
 
-- Add the following line to your ~/.bashrc file:
+- Add the following line to your ~/.bashrc (or for whichever shell you are using) file:
 `export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
 
 - close any open terminal windows after adding this line, and then re-open before continuing
@@ -186,7 +186,7 @@ Note: I cannot currently make ydotool work correctly on Ubuntu 25.04, and I have
 - You'll need to have the systemd user service running to setup the virtual input device:
 `sudo systemctl enable ydotoold`
 
-- Add the following line to your ~/.bashrc file:
+- Add the following line to your ~/.bashrc (or for whichever shell you are using) file:
 `export YDOTOOL_SOCKET=/tmp/.ydotool_socket`
 
 - close any open terminal windows after adding this line, and then re-open before continuing
